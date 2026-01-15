@@ -48,7 +48,7 @@
         let qrId = params.get("id");
 
         // Si aucun ID n'est passé, utiliser "Decaiss" par défaut
-        if (!qrId) qrId = "1- Dépalettiseur";
+        if (!qrId) qrId = "Dépalettiseur";
 
         fetch('data.json')
             .then(res => res.json())
@@ -73,5 +73,6 @@
 </body>
 
 </html>
+
 
 
