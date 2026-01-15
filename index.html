@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Document Decaisseuse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+    </style>
+</head>
+<body>
+
+    <h2>📁 Document disponible</h2>
+    <ul id="pdfList">Chargement...</ul>
+
+    <script>
+        const list = document.getElementById("pdfList");
+
+        // Récupérer l'ID depuis l'URL
+        const params = new URLSearchParams(window.location.search);
+        let qrId = params.get("id");
+
+        // Si aucun ID n'est passé, utiliser "Decaiss" par défaut
+        if (!qrId) qrId = "Decaisseuse";
+
+        fetch('data.json')
+            .then(res => res.json())
+            .then(data => {
+                const files = data[qrId];
+                if (!files) {
+                    list.innerHTML = "<li>Aucun document disponible</li>";
+                    return;
+                }
+                list.innerHTML = "";
+                files.forEach(f => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<a href="${f.file}" target="_blank">📄 ${f.name}</a>`;
+                    list.appendChild(li);
+                });
+            })
+            .catch(() => {
+                list.innerHTML = "<li>Erreur lors du chargement du fichier</li>";
+            });
+    </script>
+
+</body>
+</html>
