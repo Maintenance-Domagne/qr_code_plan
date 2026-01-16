@@ -23,7 +23,7 @@ a:hover { text-decoration: underline; }
 <script>
 const content = document.getElementById("content");
 const params = new URLSearchParams(window.location.search);
-const machine = params.get("machine");
+const machineId = params.get("machine");
 
 fetch("data.json")
   .then(res => {
@@ -65,6 +65,7 @@ fetch("data.json")
 
 </body>
 </html>
+
 
 
 
