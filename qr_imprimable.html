@@ -11,7 +11,6 @@ h1 { text-align: center; margin-bottom: 30px; }
 .machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; align-items: center; }
 .machine h2 { font-size: 16px; margin: 0; flex: 1; }
 .qr { width: 128px; height: 128px; }
-button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; }
 @media print {
   body { padding: 0; }
   .machine { page-break-inside: avoid; }
@@ -21,77 +20,68 @@ button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: point
 <body>
 
 <h1>QR Codes Machines - Embouteillage Ligne A</h1>
-<button id="exportPDF">📄 Exporter en PDF</button>
 <div id="container">Chargement...</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-const container = document.getElementById("container");
+// Données complètes des machines
+const data = {
+  "depalettiseur": { "label": "1- Dépalettiseur" },
+  "decaisseuse": { "label": "2- Décaisseuse" },
+  "laveuse": { "label": "4- Laveuse" },
+  "rinçeuse": { "label": "6- Rinçeuse" },
+  "soutireuse": { "label": "7- Soutireuse" },
+  "boucheuse": { "label": "9- Boucheuse" },
+  "visseuse_alu": { "label": "10- Visseuse alu" },
+  "museleuse": { "label": "11- Museleuse" },
+  "encaisseuse": { "label": "16- Encaisseuse" },
+  "encartonneuse": { "label": "19- Encartonneuse" },
+  "palettiseur": { "label": "21- Palettiseur" },
+  "filmeuse": { "label": "22- Filmeuse" }
+};
 
-fetch("data.json")
-  .then(res => res.json())
-  .then(data => {
-    container.innerHTML = "";
-    const ids = Object.keys(data);
-    let pageDiv = document.createElement("div");
+const container = document.getElementById("container");
+container.innerHTML = "";
+let pageDiv = document.createElement("div");
+pageDiv.className = "page";
+container.appendChild(pageDiv);
+let count = 0;
+
+for (const id in data) {
+  const machine = data[id];
+
+  const div = document.createElement("div");
+  div.className = "machine";
+
+  const h2 = document.createElement("h2");
+  h2.textContent = machine.label + " (" + id + ")";
+  div.appendChild(h2);
+
+  const qrDiv = document.createElement("div");
+  qrDiv.className = "qr";
+  div.appendChild(qrDiv);
+
+  // QR code vers la page index.html pour cette machine
+  new QRCode(qrDiv, {
+    text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
+    width: 128,
+    height: 128
+  });
+
+  pageDiv.appendChild(div);
+  count++;
+
+  if (count % 6 === 0 && count < Object.keys(data).length) {
+    pageDiv = document.createElement("div");
     pageDiv.className = "page";
     container.appendChild(pageDiv);
-    let count = 0;
-
-    ids.forEach(id => {
-      const machine = data[id];
-
-      const div = document.createElement("div");
-      div.className = "machine";
-
-      const h2 = document.createElement("h2");
-      h2.textContent = machine.label + " (" + id + ")";
-      div.appendChild(h2);
-
-      const qrDiv = document.createElement("div");
-      qrDiv.className = "qr";
-      div.appendChild(qrDiv);
-
-      new QRCode(qrDiv, {
-        text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
-        width: 128,
-        height: 128
-      });
-
-      pageDiv.appendChild(div);
-      count++;
-
-      if (count % 6 === 0 && count < ids.length) {
-        pageDiv = document.createElement("div");
-        pageDiv.className = "page";
-        container.appendChild(pageDiv);
-      }
-    });
-  })
-  .catch(err => {
-    console.error(err);
-    container.innerHTML = "<p>❌ Impossible de charger les machines</p>";
-  });
-
-// Export PDF
-document.getElementById("exportPDF").addEventListener("click", () => {
-  html2canvas(container, { scale: 2 }).then(canvas => {
-    const imgData = canvas.toDataURL("image/png");
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
-    pdf.save("QR_Codes_Machines.pdf");
-  });
-});
+  }
+}
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
