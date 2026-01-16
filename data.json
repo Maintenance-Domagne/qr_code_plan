@@ -73,7 +73,7 @@
         "name": "Schéma électrique",
         "file": "Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf"
       }
-    ]
+    ],
     "Schéma_électrique": [
       {
         "name": "Schéma électrique des échanges de données",
@@ -88,13 +88,13 @@
         "name": "Schéma électrique",
         "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"
       }
-    ]
+    ],
     "Schéma_électrique": [
       {
         "name": "Schéma électrique des échanges de données",
         "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Echanges de données.pdf"
       }
-    ]
+    ],
     "Schéma_électrique": [
       {
         "name": "Schéma électrique du rétrofit variateur",
@@ -109,7 +109,7 @@
         "name": "Schéma électrique page 1 à 69",
         "file": "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"
       }
-    ]
+    ],
     "Schéma_électrique": [
       {
         "name": "Schéma électrique page 70 à 140",
@@ -142,8 +142,8 @@
         "name": "Schéma électrique boucheuse",
         "file": "Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique boucheuse.pdf"
       }
-    ]
-    "Schéma_électrique": [
+    ],
+    "Schéma_électrique_trémie_local_bouchon": [
       {
         "name": "Schéma électrique trémie local bouchons",
         "file": "Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique trémie local bouchons.pdf"
