@@ -1,78 +1,87 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Document Embouteillage Ligne A</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background: #f9f9f9;
-        }
-
-        h2 {
-            color: #2c3e50;
-        }
-
-        ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        li {
-            margin: 10px 0;
-        }
-
-        a {
-            text-decoration: none;
-            color: #2980b9;
-            font-weight: bold;
-        }
-
-            a:hover {
-                text-decoration: underline;
-            }
-    </style>
+  <meta charset="UTF-8">
+  <title>Bibliothèque de documents</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .section {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #34495e;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      margin: 8px 0;
+    }
+    a {
+      text-decoration: none;
+      color: #2980b9;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-    <h2>📁 Document Embouteillage Ligne A</h2>
-    <ul id="pdfList">Chargement...</ul>
+<h1>📚 Embouteillage Ligne A</h1>
+<div id="content">Chargement...</div>
 
-    <script>
-        const list = document.getElementById("pdfList");
+<script>
+fetch('data.json')
+  .then(response => response.json())
+  .then(data => {
+    const container = document.getElementById('content');
+    container.innerHTML = '';
 
-        // Récupérer l'ID depuis l'URL
-        const params = new URLSearchParams(window.location.search);
-        let qrId = params.get("id");
+    for (const category in data) {
+      const section = document.createElement('div');
+      section.className = 'section';
 
-        // Si aucun ID n'est passé, utiliser "Decaiss" par défaut
-        if (!qrId) qrId = "Dépalettiseur";
+      const title = document.createElement('h2');
+      title.textContent = category;
+      section.appendChild(title);
 
-        fetch('data.json')
-            .then(res => res.json())
-            .then(data => {
-                const files = data[qrId];
-                if (!files) {
-                    list.innerHTML = "<li>Aucun document disponible</li>";
-                    return;
-                }
-                list.innerHTML = "";
-                files.forEach(f => {
-                    const li = document.createElement("li");
-                    li.innerHTML = `<a href="${f.file}" target="_blank">📄 ${f.name}</a>`;
-                    list.appendChild(li);
-                });
-            })
-            .catch(() => {
-                list.innerHTML = "<li>Erreur lors du chargement du fichier</li>";
-            });
-    </script>
+      const ul = document.createElement('ul');
+
+      data[category].forEach(doc => {
+        const li = document.createElement('li');
+        li.innerHTML = `📄 <a href="${doc.file}" target="_blank">${doc.name}</a>`;
+        ul.appendChild(li);
+      });
+
+      section.appendChild(ul);
+      container.appendChild(section);
+    }
+  })
+  .catch(() => {
+    document.getElementById('content').innerHTML =
+      "❌ Impossible de charger les documents";
+  });
+</script>
 
 </body>
-
 </html>
+
 
 
 
