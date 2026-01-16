@@ -28,7 +28,7 @@ h1 { text-align: center; margin-bottom: 30px; }
 const container = document.getElementById("container");
 
 // Charge le data.json
-fetch("data.json")
+fetch("./data.json")
   .then(res => {
     if (!res.ok) throw new Error("Impossible de charger data.json (vérifie son emplacement)");
     return res.json();
