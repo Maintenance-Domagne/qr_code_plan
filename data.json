@@ -2,15 +2,16 @@
   {
    "1- Dépalettiseur": {
     "Schéma_électrique": [
-       "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"
+      {"name": "Schéma électique", "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"}
       ],
     "Schéma_pneumatique": [
-       "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"
+      {"name": "Schéma pneumatique", "file":  "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"}
       ],
-    "Ficher_réglages": [
-      "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"
+    "Fichier_réglages": [
+      {"name": "Fichier de réglages", "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"}
       ]
   }
+
 
 
 
