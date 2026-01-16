@@ -33,23 +33,26 @@ fetch("data.json")
     return res.json();
   })
   .then(data => {
-    if (!machine) {
+    if (!machineId) {
       content.innerHTML = "<p>❌ Paramètre ?machine manquant</p>";
       return;
     }
-    if (!data[machine]) {
-      content.innerHTML = "<p>❌ Machine inconnue : " + machine + "</p>";
+    if (!data[machineId]) {
+      content.innerHTML = "<p>❌ Machine inconnue : " + machineId + "</p>";
       return;
     }
 
+    const machine = data[machineId]; // maintenant c’est correct
     content.innerHTML = `<h2>${machine.label}</h2>`;
-    for (const folder in data[machine]) {
+
+    for (const folder in machine) {
+      if (folder === "label") continue; // ignorer la propriété label
       const h3 = document.createElement("h3");
       h3.textContent = folder.replaceAll("_", " ");
       content.appendChild(h3);
 
       const ul = document.createElement("ul");
-      data[machine][folder].forEach(item => {
+      machine[folder].forEach(item => {
         const li = document.createElement("li");
         li.innerHTML = `📄 <a href="${item.file}" target="_blank">${item.name}</a>`;
         ul.appendChild(li);
@@ -65,6 +68,7 @@ fetch("data.json")
 
 </body>
 </html>
+
 
 
 
