@@ -27,9 +27,7 @@ const machineId = params.get("machine");
 
 fetch("data.json")
   .then(res => {
-    if (!res.ok) {
-      throw new Error("HTTP " + res.status + " – data.json introuvable");
-    }
+    if (!res.ok) throw new Error("HTTP " + res.status + " – data.json introuvable");
     return res.json();
   })
   .then(data => {
@@ -37,16 +35,18 @@ fetch("data.json")
       content.innerHTML = "<p>❌ Paramètre ?machine manquant</p>";
       return;
     }
+
     if (!data[machineId]) {
       content.innerHTML = "<p>❌ Machine inconnue : " + machineId + "</p>";
       return;
     }
 
-    const machine = data[machineId]; // maintenant c’est correct
+    const machine = data[machineId]; // Création de la variable
+
     content.innerHTML = `<h2>${machine.label}</h2>`;
 
     for (const folder in machine) {
-      if (folder === "label") continue; // ignorer la propriété label
+      if (folder === "label") continue; // ignorer le label
       const h3 = document.createElement("h3");
       h3.textContent = folder.replaceAll("_", " ");
       content.appendChild(h3);
@@ -65,9 +65,10 @@ fetch("data.json")
     content.innerHTML = "<p>❌ ERREUR : " + err.message + "</p>";
   });
 </script>
-
+  
 </body>
 </html>
+
 
 
 
