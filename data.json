@@ -1,38 +1,34 @@
 
-  {
-   "1- Dépalettiseur": 
-    {
+ {
+  "1- Dépalettiseur": {
     "Schéma_électrique": [
       {
-        "name": "Schéma électique", 
+        "name": "Schéma électrique", 
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"
       }
-      ],
+    ],
     "Schéma_pneumatique": [
       {
         "name": "Schéma pneumatique", 
-        "file":  "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"
+        "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"
       }
-      ],
+    ],
     "Fichier_réglages": [
       {
         "name": "Fichier de réglages", 
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"
       }
-      ]
-   }
+    ]
   },
-
-   "10- Visseuse alu": 
-    {
+  "10- Visseuse alu": {
     "Schéma_électrique": [
       {
-        "name": "Schéma électique", 
+        "name": "Schéma électrique", 
         "file": "Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"
       }
-      ]
-   }
+    ]
   }
+}
 
 
 
