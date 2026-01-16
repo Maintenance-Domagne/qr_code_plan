@@ -13,12 +13,16 @@ ul { list-style: none; padding-left: 0; }
 li { background: #ecf0f1; margin: 8px 0; padding: 10px; border-radius: 5px; }
 a { text-decoration: none; color: #2980b9; font-weight: bold; }
 a:hover { text-decoration: underline; }
+.qr { margin: 10px 0; }
 </style>
 </head>
 <body>
 
 <h1>📄 Embouteillage Ligne A</h1>
 <div id="content">Chargement...</div>
+
+<!-- QRCode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
 const content = document.getElementById("content");
@@ -32,21 +36,69 @@ fetch("data.json")
   })
   .then(data => {
     if (!machineId) {
-      content.innerHTML = "<p>❌ Paramètre ?machine manquant</p>";
+      // Aucune machine spécifiée → afficher toutes les machines avec QR codes
+      content.innerHTML = "<h2>Toutes les machines</h2>";
+
+      for (const id in data) {
+        const machine = data[id];
+
+        const h3 = document.createElement("h3");
+        h3.textContent = machine.label;
+        content.appendChild(h3);
+
+        const qrDiv = document.createElement("div");
+        qrDiv.className = "qr";
+        content.appendChild(qrDiv);
+
+        // Générer QR code pointant vers la machine
+        new QRCode(qrDiv, {
+          text: `${window.location.origin}${window.location.pathname}?machine=${id}`,
+          width: 128,
+          height: 128
+        });
+
+        // Lister les fichiers
+        for (const folder in machine) {
+          if (folder === "label") continue;
+          const h4 = document.createElement("h4");
+          h4.textContent = folder.replaceAll("_", " ");
+          content.appendChild(h4);
+
+          const ul = document.createElement("ul");
+          machine[folder].forEach(item => {
+            const li = document.createElement("li");
+            li.innerHTML = `📄 <a href="${item.file}" target="_blank">${item.name}</a>`;
+            ul.appendChild(li);
+          });
+          content.appendChild(ul);
+        }
+      }
+
       return;
     }
 
+    // Machine spécifiée → afficher ses fichiers
     if (!data[machineId]) {
       content.innerHTML = "<p>❌ Machine inconnue : " + machineId + "</p>";
       return;
     }
 
-    const machine = data[machineId]; // Création de la variable
-
+    const machine = data[machineId];
     content.innerHTML = `<h2>${machine.label}</h2>`;
 
+    // QR code pour cette machine
+    const qrDiv = document.createElement("div");
+    qrDiv.className = "qr";
+    content.appendChild(qrDiv);
+
+    new QRCode(qrDiv, {
+      text: `${window.location.href}`,
+      width: 128,
+      height: 128
+    });
+
     for (const folder in machine) {
-      if (folder === "label") continue; // ignorer le label
+      if (folder === "label") continue;
       const h3 = document.createElement("h3");
       h3.textContent = folder.replaceAll("_", " ");
       content.appendChild(h3);
@@ -65,7 +117,7 @@ fetch("data.json")
     content.innerHTML = "<p>❌ ERREUR : " + err.message + "</p>";
   });
 </script>
-  
+
 </body>
 </html>
 
