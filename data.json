@@ -5,17 +5,13 @@
         "name": "Dépalettiseur Schéma electrique",
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"
       }
-    ]
-  }
-
-{
+    ],
     "Dépalettiseur Schéma pneumatique": [
       {
         "name": "Dépalettiseur Schéma electrique",
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"
       }
-    ]
-  }
+    ],
  "Dépalettiseur Fiche de réglage": [
       {
         "name": "Dépalettiseur Schéma electrique",
@@ -23,6 +19,7 @@
       }
     ]
   }
+
 
 
 
