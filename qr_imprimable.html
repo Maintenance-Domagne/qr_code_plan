@@ -25,62 +25,57 @@ h1 { text-align: center; margin-bottom: 30px; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-// Données complètes des machines
-const data = {
-  "depalettiseur": { "label": "1- Dépalettiseur" },
-  "decaisseuse": { "label": "2- Décaisseuse" },
-  "laveuse": { "label": "4- Laveuse" },
-  "rinçeuse": { "label": "6- Rinçeuse" },
-  "soutireuse": { "label": "7- Soutireuse" },
-  "boucheuse": { "label": "9- Boucheuse" },
-  "visseuse_alu": { "label": "10- Visseuse alu" },
-  "museleuse": { "label": "11- Museleuse" },
-  "encaisseuse": { "label": "16- Encaisseuse" },
-  "encartonneuse": { "label": "19- Encartonneuse" },
-  "palettiseur": { "label": "21- Palettiseur" },
-  "filmeuse": { "label": "22- Filmeuse" }
-};
-
 const container = document.getElementById("container");
-container.innerHTML = "";
-let pageDiv = document.createElement("div");
-pageDiv.className = "page";
-container.appendChild(pageDiv);
-let count = 0;
 
-for (const id in data) {
-  const machine = data[id];
-
-  const div = document.createElement("div");
-  div.className = "machine";
-
-  const h2 = document.createElement("h2");
-  h2.textContent = machine.label + " (" + id + ")";
-  div.appendChild(h2);
-
-  const qrDiv = document.createElement("div");
-  qrDiv.className = "qr";
-  div.appendChild(qrDiv);
-
-  new QRCode(qrDiv, {
-    text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
-    width: 128,
-    height: 128
-  });
-
-  pageDiv.appendChild(div);
-  count++;
-
-  if (count % 6 === 0 && count < Object.keys(data).length) {
-    pageDiv = document.createElement("div");
+// Charge le data.json
+fetch("./data.json")
+  .then(res => {
+    if (!res.ok) throw new Error("Impossible de charger data.json (vérifie son emplacement)");
+    return res.json();
+  })
+  .then(data => {
+    container.innerHTML = "";
+    let pageDiv = document.createElement("div");
     pageDiv.className = "page";
     container.appendChild(pageDiv);
-  }
-}
-</script>
+    let count = 0;
 
-</body>
-</html>
+    for (const id in data) {
+      const machine = data[id];
+
+      const div = document.createElement("div");
+      div.className = "machine";
+
+      const h2 = document.createElement("h2");
+      h2.textContent = machine.label + " (" + id + ")";
+      div.appendChild(h2);
+
+      const qrDiv = document.createElement("div");
+      qrDiv.className = "qr";
+      div.appendChild(qrDiv);
+
+      // QR code vers index.html pour cette machine
+      new QRCode(qrDiv, {
+        text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
+        width: 128,
+        height: 128
+      });
+
+      pageDiv.appendChild(div);
+      count++;
+
+      if (count % 6 === 0 && count < Object.keys(data).length) {
+        pageDiv = document.createElement("div");
+        pageDiv.className = "page";
+        container.appendChild(pageDiv);
+      }
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    container.innerHTML = "<p>❌ Impossible de charger les machines</p>";
+  });
+</script>
 
 </body>
 </html>
