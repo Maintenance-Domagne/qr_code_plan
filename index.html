@@ -21,7 +21,6 @@ a:hover { text-decoration: underline; }
 <h1>📄 Embouteillage Ligne A</h1>
 <div id="content">Chargement...</div>
 
-<!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
@@ -29,54 +28,17 @@ const content = document.getElementById("content");
 const params = new URLSearchParams(window.location.search);
 const machineId = params.get("machine");
 
-fetch("data.json")
+fetch("./data.json")
   .then(res => {
     if (!res.ok) throw new Error("HTTP " + res.status + " – data.json introuvable");
     return res.json();
   })
   .then(data => {
     if (!machineId) {
-      // Aucune machine spécifiée → afficher toutes les machines avec QR codes
-      content.innerHTML = "<h2>Toutes les machines</h2>";
-
-      for (const id in data) {
-        const machine = data[id];
-
-        const h3 = document.createElement("h3");
-        h3.textContent = machine.label;
-        content.appendChild(h3);
-
-        const qrDiv = document.createElement("div");
-        qrDiv.className = "qr";
-        content.appendChild(qrDiv);
-
-        new QRCode(qrDiv, {
-          text: `${window.location.origin}${window.location.pathname}?machine=${id}`,
-          width: 128,
-          height: 128
-        });
-
-        // Lister les fichiers
-        for (const folder in machine) {
-          if (folder === "label") continue;
-          const h4 = document.createElement("h4");
-          h4.textContent = folder.replaceAll("_", " ");
-          content.appendChild(h4);
-
-          const ul = document.createElement("ul");
-          machine[folder].forEach(item => {
-            const li = document.createElement("li");
-            li.innerHTML = `📄 <a href="${item.file}" target="_blank">${item.name}</a>`;
-            ul.appendChild(li);
-          });
-          content.appendChild(ul);
-        }
-      }
-
+      content.innerHTML = "<p>❌ Paramètre ?machine manquant</p>";
       return;
     }
 
-    // Machine spécifiée → afficher ses fichiers et QR code
     if (!data[machineId]) {
       content.innerHTML = "<p>❌ Machine inconnue : " + machineId + "</p>";
       return;
@@ -85,16 +47,17 @@ fetch("data.json")
     const machine = data[machineId];
     content.innerHTML = `<h2>${machine.label}</h2>`;
 
+    // QR code pour la machine
     const qrDiv = document.createElement("div");
     qrDiv.className = "qr";
     content.appendChild(qrDiv);
-
     new QRCode(qrDiv, {
       text: `${window.location.href}`,
       width: 128,
       height: 128
     });
 
+    // Liste des fichiers
     for (const folder in machine) {
       if (folder === "label") continue;
       const h3 = document.createElement("h3");
