@@ -1,81 +1,62 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Bibliothèque de documents</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      padding: 20px;
-    }
-    h1 {
-      color: #2c3e50;
-    }
-    .section {
-      background: white;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .section h2 {
-      margin-top: 0;
-      color: #34495e;
-    }
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    li {
-      margin: 8px 0;
-    }
-    a {
-      text-decoration: none;
-      color: #2980b9;
-      font-weight: bold;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Documents par machine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: Arial, sans-serif; background: #f4f6f8; padding: 20px; }
+h1 { color: #2c3e50; }
+h2 { color: #34495e; margin-top: 20px; }
+h3 { color: #2c3e50; margin-top: 10px; }
+ul { list-style: none; padding-left: 0; }
+li { background: #ecf0f1; margin: 8px 0; padding: 10px; border-radius: 5px; }
+a { text-decoration: none; color: #2980b9; font-weight: bold; }
+a:hover { text-decoration: underline; }
+</style>
 </head>
 <body>
 
-<h1>📚 Embouteillage Ligne A</h1>
+<h1>📄 Embouteillage Ligne A</h1>
 <div id="content">Chargement...</div>
 
 <script>
-fetch('data.json')
-  .then(response => response.json())
+const pdfFolder = "pdf/";
+const content = document.getElementById("content");
+
+// Récupérer la machine depuis l'URL
+const params = new URLSearchParams(window.location.search);
+const machine = params.get("machine");
+
+// Charger data.json
+fetch("data.json")
+  .then(res => res.json())
   .then(data => {
-    const container = document.getElementById('content');
-    container.innerHTML = '';
+    if (!machine || !data[machine]) {
+      content.innerHTML = "<p>❌ Machine non trouvée ou aucun document disponible</p>";
+      return;
+    }
 
-    for (const category in data) {
-      const section = document.createElement('div');
-      section.className = 'section';
+    content.innerHTML = `<h2>${machine}</h2>`;
 
-      const title = document.createElement('h2');
-      title.textContent = category;
-      section.appendChild(title);
+    const machineData = data[machine];
+    for (const folder in machineData) {
+      const folderTitle = folder || "Documents";
+      const h3 = document.createElement("h3");
+      h3.textContent = folderTitle;
+      content.appendChild(h3);
 
-      const ul = document.createElement('ul');
-
-      data[category].forEach(doc => {
-        const li = document.createElement('li');
-        li.innerHTML = `📄 <a href="${doc.file}" target="_blank">${doc.name}</a>`;
+      const ul = document.createElement("ul");
+      machineData[folder].forEach(file => {
+        const li = document.createElement("li");
+        li.innerHTML = `📄 <a href="${pdfFolder}${file}" target="_blank">${file.split("/").pop()}</a>`;
         ul.appendChild(li);
       });
-
-      section.appendChild(ul);
-      container.appendChild(section);
+      content.appendChild(ul);
     }
   })
   .catch(() => {
-    document.getElementById('content').innerHTML =
-      "❌ Impossible de charger les documents";
+    content.innerHTML = "<p>❌ Impossible de charger la liste des documents</p>";
   });
 </script>
 
