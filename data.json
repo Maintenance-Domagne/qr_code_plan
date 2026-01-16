@@ -74,7 +74,7 @@
         "file": "Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf"
       }
     ],
-    "Schéma_électrique": [
+    "Schéma_électrique_échanges": [
       {
         "name": "Schéma électrique des échanges de données",
         "file": "Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec ajouts.pdf"
@@ -89,13 +89,13 @@
         "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"
       }
     ],
-    "Schéma_électrique": [
+    "Schéma_électrique_échanges": [
       {
         "name": "Schéma électrique des échanges de données",
         "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Echanges de données.pdf"
       }
     ],
-    "Schéma_électrique": [
+    "Schéma_électrique_retrofit": [
       {
         "name": "Schéma électrique du rétrofit variateur",
         "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/SCHEMA W0223A ELITE TOPPAL 2025-03-12 MODIFICATION P0967A.pdf"
@@ -104,13 +104,13 @@
 },
   "laveuse": {
     "label": "4- Laveuse",
-    "Schéma_électrique": [
+    "Schéma_électrique_p1_69": [
       {
         "name": "Schéma électrique page 1 à 69",
         "file": "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"
       }
     ],
-    "Schéma_électrique": [
+    "Schéma_électrique_p70_140": [
       {
         "name": "Schéma électrique page 70 à 140",
         "file": "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf"
@@ -151,6 +151,7 @@
     ]
   }
 }
+
 
 
 
