@@ -24,52 +24,19 @@ a:hover { text-decoration: underline; }
 const pdfFolder = "pdf/";
 const content = document.getElementById("content");
 
-// Fonction pour encoder les noms dans l'URL
-function encodeMachineName(name) {
-  return encodeURIComponent(name);
-}
-
-// Récupérer machine depuis l'URL
+// Récupérer la machine depuis l'URL
 const params = new URLSearchParams(window.location.search);
-let machine = params.get("machine");
+const machine = params.get("machine");
 
+// Charger data.json
 fetch("data.json")
   .then(res => res.json())
   .then(data => {
-    // Si aucune machine passée ou non existante, afficher la liste complète pour QR code
     if (!machine || !data[machine]) {
-      content.innerHTML = "<h2>Toutes les machines</h2>";
-      for (const m in data) {
-        const h3 = document.createElement("h3");
-        h3.textContent = m;
-        content.appendChild(h3);
-
-        const ul = document.createElement("ul");
-        for (const folder in data[m]) {
-          const folderTitle = folder || "Documents";
-          const liFolder = document.createElement("li");
-          liFolder.innerHTML = `<strong>${folderTitle}</strong>`;
-          ul.appendChild(liFolder);
-
-          data[m][folder].forEach(file => {
-            const li = document.createElement("li");
-            li.innerHTML = `📄 <a href="${pdfFolder}${file}" target="_blank">${file.split("/").pop()}</a>`;
-            ul.appendChild(li);
-          });
-        }
-
-        // Ajouter un QR code pour la machine
-        const qrLink = document.createElement("p");
-        const encodedName = encodeMachineName(m);
-        qrLink.innerHTML = `QR Code URL : <a href="?machine=${encodedName}" target="_blank">?machine=${encodedName}</a>`;
-        content.appendChild(qrLink);
-
-        content.appendChild(ul);
-      }
+      content.innerHTML = "<p>❌ Machine non trouvée ou aucun document disponible</p>";
       return;
     }
 
-    // Afficher uniquement les fichiers de la machine sélectionnée
     content.innerHTML = `<h2>${machine}</h2>`;
 
     const machineData = data[machine];
@@ -95,6 +62,7 @@ fetch("data.json")
 
 </body>
 </html>
+
 
 
 
