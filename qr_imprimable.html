@@ -62,7 +62,6 @@ for (const id in data) {
   qrDiv.className = "qr";
   div.appendChild(qrDiv);
 
-  // QR code vers la page index.html pour cette machine
   new QRCode(qrDiv, {
     text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
     width: 128,
