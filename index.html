@@ -20,17 +20,17 @@ a:hover { text-decoration: underline; }
 <h1>📄 Embouteillage Ligne A</h1>
 <div id="content">Chargement...</div>
 
-<script>
-const pdfFolder = "Embouteillage_ligne_A/";
+<<script>
 const content = document.getElementById("content");
 
-// Récupérer la machine depuis l'URL
 const params = new URLSearchParams(window.location.search);
 const machine = params.get("machine");
 
-// Charger data.json
 fetch("data.json")
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error("data.json introuvable");
+    return res.json();
+  })
   .then(data => {
     if (!machine || !data[machine]) {
       content.innerHTML = "<p>❌ Machine non trouvée ou aucun document disponible</p>";
@@ -38,30 +38,31 @@ fetch("data.json")
     }
 
     content.innerHTML = `<h2>${machine}</h2>`;
-
     const machineData = data[machine];
+
     for (const folder in machineData) {
-      const folderTitle = folder || "Documents";
       const h3 = document.createElement("h3");
-      h3.textContent = folderTitle;
+      h3.textContent = folder || "Documents";
       content.appendChild(h3);
 
       const ul = document.createElement("ul");
       machineData[folder].forEach(file => {
         const li = document.createElement("li");
-        li.innerHTML = `📄 <a href="${pdfFolder}${file}" target="_blank">${file.split("/").pop()}</a>`;
+        li.innerHTML = `📄 <a href="${file}" target="_blank">${file.split("/").pop()}</a>`;
         ul.appendChild(li);
       });
       content.appendChild(ul);
     }
   })
-  .catch(() => {
+  .catch(err => {
+    console.error(err);
     content.innerHTML = "<p>❌ Impossible de charger la liste des documents</p>";
   });
 </script>
 
 </body>
 </html>
+
 
 
 
