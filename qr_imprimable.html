@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -30,52 +29,73 @@ button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: point
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-const container = document.getElementById("container");
+// DONNÉES DES MACHINES (remplace fetch)
+const data = {
+  "depalettiseur": {
+    "label": "1- Dépalettiseur",
+    "Schéma_électrique": [
+      {"name": "Schéma électrique", "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"}
+    ],
+    "Schéma_pneumatique": [
+      {"name": "Schéma pneumatique", "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"}
+    ],
+    "Fichier_réglages": [
+      {"name": "Fichier de réglages", "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"}
+    ]
+  },
+  "visseuse_alu": {
+    "label": "10- Visseuse alu",
+    "Schéma_électrique": [
+      {"name": "Schéma électrique", "file": "Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"}
+    ]
+  },
+  "museleuse": {
+    "label": "11- Museleuse",
+    "Schéma_électrique": [
+      {"name": "Schéma électrique", "file": "Embouteillage_ligne_A/11- Museleuse/Schéma_électrique/Schéma électrique museleuse.pdf"}
+    ]
+  }
+  // ajoute ici toutes les autres machines
+};
 
-fetch("data.json")
-  .then(res => res.json())
-  .then(data => {
-    container.innerHTML = "";
-    const ids = Object.keys(data);
-    let pageDiv = document.createElement("div");
+const container = document.getElementById("container");
+container.innerHTML = "";
+const ids = Object.keys(data);
+let pageDiv = document.createElement("div");
+pageDiv.className = "page";
+container.appendChild(pageDiv);
+let count = 0;
+
+ids.forEach(id => {
+  const machine = data[id];
+
+  const div = document.createElement("div");
+  div.className = "machine";
+
+  const h2 = document.createElement("h2");
+  h2.textContent = machine.label + " (" + id + ")";
+  div.appendChild(h2);
+
+  const qrDiv = document.createElement("div");
+  qrDiv.className = "qr";
+  div.appendChild(qrDiv);
+
+  // QR code vers la page index.html pour cette machine
+  new QRCode(qrDiv, {
+    text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
+    width: 128,
+    height: 128
+  });
+
+  pageDiv.appendChild(div);
+  count++;
+
+  if (count % 6 === 0 && count < ids.length) {
+    pageDiv = document.createElement("div");
     pageDiv.className = "page";
     container.appendChild(pageDiv);
-    let count = 0;
-
-    ids.forEach(id => {
-      const machine = data[id];
-
-      const div = document.createElement("div");
-      div.className = "machine";
-
-      const h2 = document.createElement("h2");
-      h2.textContent = machine.label + " (" + id + ")";
-      div.appendChild(h2);
-
-      const qrDiv = document.createElement("div");
-      qrDiv.className = "qr";
-      div.appendChild(qrDiv);
-
-      new QRCode(qrDiv, {
-        text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
-        width: 128,
-        height: 128
-      });
-
-      pageDiv.appendChild(div);
-      count++;
-
-      if (count % 6 === 0 && count < ids.length) {
-        pageDiv = document.createElement("div");
-        pageDiv.className = "page";
-        container.appendChild(pageDiv);
-      }
-    });
-  })
-  .catch(err => {
-    console.error(err);
-    container.innerHTML = "<p>❌ Impossible de charger les machines</p>";
-  });
+  }
+});
 
 // Export PDF
 document.getElementById("exportPDF").addEventListener("click", () => {
@@ -84,7 +104,6 @@ document.getElementById("exportPDF").addEventListener("click", () => {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
     const imgProps = pdf.getImageProperties(imgData);
     const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
 
@@ -96,3 +115,4 @@ document.getElementById("exportPDF").addEventListener("click", () => {
 
 </body>
 </html>
+
