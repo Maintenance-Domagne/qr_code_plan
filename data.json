@@ -29,8 +29,129 @@
         "file": "Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"
       }
     ]
+  },
+  "museleuse": {
+    "label": "11- Museleuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/11- Museleuse/Schéma_électrique/Schéma électrique museleuse.pdf"
+      }
+    ]
+ },
+  "encaisseuse": {
+    "label": "16- Encaisseuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/16- Encaisseuse/Schéma_électrique/ECLOR_ENCAISSEUSE BOUTEILLES_IND01.pdf"
+      }
+    ]
+},
+  "encartonneuse": {
+    "label": "19- Encartonneuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/19- Encartonneuse/Schéma_électrique/Schéma électrique OCME.pdf"
+      }
+    ]
+},
+  "decaisseuse": {
+    "label": "2- Décaisseuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/2- Décaisseuse/Schéma_électrique/Schéma électrique décaisseuse.pdf"
+      }
+    ]
+},
+  "palettiseur": {
+    "label": "21- Palettiseur",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf"
+      }
+    ]
+    "Schéma_électrique_échanges": [
+      {
+        "name": "Schéma électrique des échanges de données",
+        "file": "Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec ajouts.pdf"
+      }
+    ]
+},
+  "filmeuse": {
+    "label": "22- Filmeuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"
+      }
+    ]
+    "Schéma_électrique_échanges": [
+      {
+        "name": "Schéma électrique des échanges de données",
+        "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Echanges de données.pdf"
+      }
+    ]
+    "Schéma_électrique_rétrofit": [
+      {
+        "name": "Schéma électrique du rétrofit variateur",
+        "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/SCHEMA W0223A ELITE TOPPAL 2025-03-12 MODIFICATION P0967A.pdf"
+      }
+    ]
+},
+  "laveuse": {
+    "label": "4- Laveuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique page 1 à 69",
+        "file": "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"
+      }
+    ]
+    "Schéma_électrique_échanges": [
+      {
+        "name": "Schéma électrique page 70 à 140",
+        "file": "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf"
+      }
+    ]
+},
+  "rinçeuse": {
+    "label": "6- Rinçeuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/6- Rinçeuse/Schéma_électrique/Plan élec Rinceuse 2015pdf.pdf"
+      }
+    ]
+},
+  "soutireuse": {
+    "label": "7- Soutireuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique",
+        "file": "Embouteillage_ligne_A/7- Soutireuse/Schéma_électrique/Schéma électrique soutireuse.pdf"
+      }
+    ]
+},
+  "boucheuse": {
+    "label": "9- Boucheuse",
+    "Schéma_électrique": [
+      {
+        "name": "Schéma électrique boucheuse",
+        "file": "Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique boucheuse.pdf"
+      }
+    ]
+    "Schéma_électrique_trémie": [
+      {
+        "name": "Schéma électrique trémie local bouchons",
+        "file": "Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique trémie local bouchons.pdf"
+      }
+    ]
   }
 }
+
 
 
 
