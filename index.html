@@ -50,7 +50,6 @@ fetch("data.json")
         qrDiv.className = "qr";
         content.appendChild(qrDiv);
 
-        // Générer QR code pointant vers la machine
         new QRCode(qrDiv, {
           text: `${window.location.origin}${window.location.pathname}?machine=${id}`,
           width: 128,
@@ -77,7 +76,7 @@ fetch("data.json")
       return;
     }
 
-    // Machine spécifiée → afficher ses fichiers
+    // Machine spécifiée → afficher ses fichiers et QR code
     if (!data[machineId]) {
       content.innerHTML = "<p>❌ Machine inconnue : " + machineId + "</p>";
       return;
@@ -86,7 +85,6 @@ fetch("data.json")
     const machine = data[machineId];
     content.innerHTML = `<h2>${machine.label}</h2>`;
 
-    // QR code pour cette machine
     const qrDiv = document.createElement("div");
     qrDiv.className = "qr";
     content.appendChild(qrDiv);
@@ -120,6 +118,7 @@ fetch("data.json")
 
 </body>
 </html>
+
 
 
 
