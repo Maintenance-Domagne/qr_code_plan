@@ -1,4 +1,4 @@
-
+matique
   {
     "Dépalettiseur Schéma electrique": [
       {
@@ -8,17 +8,18 @@
     ],
     "Dépalettiseur Schéma pneumatique": [
       {
-        "name": "Dépalettiseur Schéma electrique",
+        "name": "Dépalettiseur Schéma pneumatique",
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"
       }
     ],
  "Dépalettiseur Fiche de réglage": [
       {
-        "name": "Dépalettiseur Schéma electrique",
+        "name": "Dépalettiseur Fichier rélages",
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"
       }
     ]
   }
+
 
 
 
