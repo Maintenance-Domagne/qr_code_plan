@@ -22,54 +22,50 @@ a:hover { text-decoration: underline; }
 
 <script>
 const content = document.getElementById("content");
-
-// Récupérer la machine depuis l'URL
 const params = new URLSearchParams(window.location.search);
 const machine = params.get("machine");
 
 fetch("data.json")
   .then(res => {
-    if (!res.ok) throw new Error("data.json introuvable");
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status + " – data.json introuvable");
+    }
     return res.json();
   })
   .then(data => {
-    if (!machine || !data[machine]) {
-      content.innerHTML = "<p>❌ Machine non trouvée ou aucun document disponible</p>";
+    if (!machine) {
+      content.innerHTML = "<p>❌ Paramètre ?machine manquant</p>";
+      return;
+    }
+    if (!data[machine]) {
+      content.innerHTML = "<p>❌ Machine inconnue : " + machine + "</p>";
       return;
     }
 
     content.innerHTML = `<h2>${machine}</h2>`;
-    const machineData = data[machine];
-
-    for (const folder in machineData) {
-      // Titre du sous-dossier
+    for (const folder in data[machine]) {
       const h3 = document.createElement("h3");
       h3.textContent = folder.replaceAll("_", " ");
       content.appendChild(h3);
 
       const ul = document.createElement("ul");
-
-      machineData[folder].forEach(item => {
+      data[machine][folder].forEach(item => {
         const li = document.createElement("li");
-        li.innerHTML = `
-          📄 <a href="${item.file}" target="_blank">
-            ${item.name}
-          </a>
-        `;
+        li.innerHTML = `📄 <a href="${item.file}" target="_blank">${item.name}</a>`;
         ul.appendChild(li);
       });
-
       content.appendChild(ul);
     }
   })
   .catch(err => {
     console.error(err);
-    content.innerHTML = "<p>❌ Impossible de charger la liste des documents</p>";
+    content.innerHTML = "<p>❌ ERREUR : " + err.message + "</p>";
   });
 </script>
 
 </body>
 </html>
+
 
 
 
