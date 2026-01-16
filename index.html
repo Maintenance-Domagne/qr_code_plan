@@ -20,9 +20,10 @@ a:hover { text-decoration: underline; }
 <h1>📄 Embouteillage Ligne A</h1>
 <div id="content">Chargement...</div>
 
-<<script>
+<script>
 const content = document.getElementById("content");
 
+// Récupérer la machine depuis l'URL
 const params = new URLSearchParams(window.location.search);
 const machine = params.get("machine");
 
@@ -41,16 +42,23 @@ fetch("data.json")
     const machineData = data[machine];
 
     for (const folder in machineData) {
+      // Titre du sous-dossier
       const h3 = document.createElement("h3");
-      h3.textContent = folder || "Documents";
+      h3.textContent = folder.replaceAll("_", " ");
       content.appendChild(h3);
 
       const ul = document.createElement("ul");
-      machineData[folder].forEach(file => {
+
+      machineData[folder].forEach(item => {
         const li = document.createElement("li");
-        li.innerHTML = `📄 <a href="${file}" target="_blank">${file.split("/").pop()}</a>`;
+        li.innerHTML = `
+          📄 <a href="${item.file}" target="_blank">
+            ${item.name}
+          </a>
+        `;
         ul.appendChild(li);
       });
+
       content.appendChild(ul);
     }
   })
@@ -62,6 +70,7 @@ fetch("data.json")
 
 </body>
 </html>
+
 
 
 
