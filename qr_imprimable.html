@@ -11,7 +11,7 @@ h1 { text-align: center; margin-bottom: 20px; }
 .machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; align-items: center; }
 .machine h2 { font-size: 16px; margin: 0; flex: 1; }
 .qr { width: 128px; height: 128px; }
-button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: block; margin-left: auto; margin-right: auto; }
+button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
 @media print {
   body { padding: 0; }
   .machine { page-break-inside: avoid; }
@@ -23,7 +23,7 @@ button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: point
 
 <h1>QR Codes Machines - Embouteillage Ligne A</h1>
 <button id="exportPDF">📄 Exporter en PDF</button>
-<div id="container"></div>
+<div id="container">Chargement...</div>
 
 <!-- Librairies -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -87,21 +87,20 @@ for (const id in data) {
 
 // === Export PDF ===
 document.getElementById("exportPDF").addEventListener("click", () => {
-  // Petit délai pour laisser le rendu complet des QR codes
+  // Petit délai pour s'assurer que tous les QR codes sont rendus
   setTimeout(() => {
     html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
       const imgData = canvas.toDataURL("image/png");
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
       const imgProps = pdf.getImageProperties(imgData);
       const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
       pdf.save("QR_Codes_Machines.pdf");
     });
-  }, 500); // 0.5 seconde de délai pour être sûr que les QR codes sont rendus
+  }, 500);
 });
 </script>
 
