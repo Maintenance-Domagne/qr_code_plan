@@ -87,18 +87,21 @@ for (const id in data) {
 
 // === Export PDF ===
 document.getElementById("exportPDF").addEventListener("click", () => {
-  html2canvas(container, { scale: 2 }).then(canvas => {
-    const imgData = canvas.toDataURL("image/png");
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+  // Petit délai pour laisser le rendu complet des QR codes
+  setTimeout(() => {
+    html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
+      const imgData = canvas.toDataURL("image/png");
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
 
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
-    pdf.save("QR_Codes_Machines.pdf");
-  });
+      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
+      pdf.save("QR_Codes_Machines.pdf");
+    });
+  }, 500); // 0.5 seconde de délai pour être sûr que les QR codes sont rendus
 });
 </script>
 
