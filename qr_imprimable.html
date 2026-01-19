@@ -8,7 +8,7 @@
 body { font-family: Arial, sans-serif; padding: 20px; }
 h1 { text-align: center; margin-bottom: 20px; }
 .page { display: flex; flex-wrap: wrap; justify-content: space-between; page-break-after: always; }
-.machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
+.machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
 .machine h2 { font-size: 16px; margin: 0 0 10px 0; text-align: center; }
 .qr { width: 128px; height: 128px; margin-bottom: 10px; }
 ul { list-style: none; padding-left: 0; text-align: center; margin: 0; }
@@ -29,14 +29,9 @@ button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: point
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-// === Données complètes avec tous les fichiers ===
+// === Données complètes ===
 const data = {
-  "depalettiseur": {
-    "label": "1- Dépalettiseur",
-    "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"}],
-    "Schéma_pneumatique":[{"name":"Schéma pneumatique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"}],
-    "Fichier_réglages":[{"name":"Fichier de réglages","file":"Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"}]
-  },
+  "depalettiseur": {"label":"1- Dépalettiseur","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"}],"Schéma_pneumatique":[{"name":"Schéma pneumatique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"}],"Fichier_réglages":[{"name":"Fichier de réglages","file":"Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"}]},
   "decaisseuse": {"label":"2- Décaisseuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/2- Décaisseuse/Schéma_électrique/Schéma électrique décaisseuse.pdf"}]},
   "laveuse": {"label":"4- Laveuse","Schéma_électrique_p1_69":[{"name":"Schéma électrique page 1 à 69","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"}],"Schéma_électrique_p70_140":[{"name":"Schéma électrique page 70 à 140","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf"}]},
   "rinçeuse": {"label":"6- Rinçeuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/6- Rinçeuse/Schéma_électrique/Plan élec Rinceuse 2015pdf.pdf"}]},
@@ -75,7 +70,6 @@ for (const id in data) {
   const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
   new QRCode(qrDiv, { text: machineURL, width: 128, height: 128 });
 
-  // Liste des fichiers PDF
   for (const folder in machine) {
     if (folder === "label") continue;
     const ul = document.createElement("ul");
@@ -89,7 +83,6 @@ for (const id in data) {
 
   pageDiv.appendChild(div);
   count++;
-
   if (count % 6 === 0) {
     pageDiv = document.createElement("div");
     pageDiv.className = "page";
@@ -97,45 +90,56 @@ for (const id in data) {
   }
 }
 
-// === Export PDF ===
+// === Export PDF optimisé ===
 document.getElementById("exportPDF").addEventListener("click", async () => {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const gap = 10;
-  const qrSize = 50;
-  const colWidth = (pageWidth - gap*3) / 2;
 
-  let x = gap, y = gap;
+  const margin = 10;
+  const colWidth = (pageWidth - margin*3) / 2;
+  const rowHeight = (pageHeight - margin*4) / 3; // 6 cases par page
+  const qrSize = 40;
+
+  let x = margin;
+  let y = margin;
   let col = 0;
+  let row = 0;
 
   for (const id in data) {
     const machine = data[id];
     const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
 
-    // QR code en canvas
+    // QR code en canvas temporaire
     const tempDiv = document.createElement("div");
     new QRCode(tempDiv, { text: machineURL, width: 128, height: 128 });
     const qrCanvas = tempDiv.querySelector("canvas");
     const imgData = qrCanvas.toDataURL("image/png");
 
-    pdf.addImage(imgData, "PNG", x, y, qrSize, qrSize);
-    pdf.setFontSize(10);
-    pdf.text(machine.label, x, y + qrSize + 4);
+    // Ajouter QR
+    pdf.addImage(imgData, "PNG", x + (colWidth-qrSize)/2, y + 5, qrSize, qrSize);
 
-    // Ajouter les fichiers PDF en texte
-    let fileY = y + qrSize + 8;
+    // Ajouter label
+    pdf.setFontSize(12);
+    pdf.text(machine.label, x + colWidth/2, y + qrSize + 12, { align: "center" });
+
+    // Ajouter fichiers PDF
+    let fileY = y + qrSize + 16;
+    pdf.setFontSize(10);
     for (const folder in machine) {
       if (folder === "label") continue;
       machine[folder].forEach(item => {
-        pdf.text(`- ${item.name}`, x, fileY);
+        pdf.text(item.name, x + 5, fileY, { maxWidth: colWidth - 10 });
         fileY += 5;
       });
     }
 
-    if (col === 0) { x += colWidth + gap; col = 1; }
-    else { x = gap; col = 0; y = fileY + gap; if (y + qrSize + 20 > pageHeight) { pdf.addPage(); y = gap; } }
+    col++;
+    if (col >= 2) { col = 0; row++; x = margin; y += rowHeight + margin; }
+    else { x += colWidth + margin; }
+
+    if (row >= 3) { pdf.addPage(); x = margin; y = margin; col = 0; row = 0; }
   }
 
   pdf.save("QR_Codes_Machines.pdf");
