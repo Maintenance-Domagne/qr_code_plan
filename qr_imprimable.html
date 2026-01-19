@@ -88,7 +88,7 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
   const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const scale = 4;
+  const scale = 2;
 
   const containerClone = container.cloneNode(true);
   containerClone.style.width = pageWidth + "mm";
