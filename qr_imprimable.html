@@ -94,33 +94,14 @@ const data = {
 };
 
 // === Génération des QR codes et listes PDF ===
-const container = document.getElementById("container");
-container.innerHTML = "";
-let pageDiv = document.createElement("div");
-pageDiv.className = "page";
-container.appendChild(pageDiv);
-let count = 0;
-
-for (const id in data) {
-  const machine = data[id];
-
-  const div = document.createElement("div");
-  div.className = "machine";
-
-  const h2 = document.createElement("h2");
-  h2.textContent = machine.label + " (" + id + ")";
-  div.appendChild(h2);
-
-  const qrDiv = document.createElement("div");
-  qrDiv.className = "qr";
-  div.appendChild(qrDiv);
-
   new QRCode(qrDiv, {
-    text: `${window.location.origin}${window.location.pathname.replace("qr_imprimable.html","index.html")}?machine=${id}`,
-    width: 128,
-    height: 128
-  });
-
+  text: `${window.location.origin}${window.location.pathname.replace(
+    "qr_imprimable.html",
+    "index.html"
+  )}?machine=${id}`,
+  width: 128,
+  height: 128
+});
   // Liste des fichiers PDF
   for (const folder in machine) {
     if (folder === "label") continue;
