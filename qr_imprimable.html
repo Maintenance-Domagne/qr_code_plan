@@ -271,7 +271,8 @@ async function exportToPDF() {
     const cardWidth = (pageWidth - margin * 3) / 2;
     const cardHeight = (pageHeight - margin * 3) / 2;
 
-    const qrSize = 35;
+    const titleHeight = 12;
+    const qrSize = 40;
 
     let index = 0;
     const machineIds = Object.keys(machinesData);
@@ -292,16 +293,27 @@ async function exportToPDF() {
         const machine = machinesData[id];
         const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
 
-        // Carte
-        pdf.setDrawColor(180);
+        // Carte principale
+        pdf.setDrawColor(120);
         pdf.roundedRect(x, y, cardWidth, cardHeight, 3, 3);
 
-        // Titre
+        // Bandeau titre
+        pdf.setFillColor(240, 240, 240);
+        pdf.rect(x, y, cardWidth, titleHeight, "F");
+
+        pdf.setDrawColor(120);
+        pdf.rect(x, y, cardWidth, titleHeight);
+
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(12);
-        pdf.text(machine.label, x + 5, y + 8);
+        pdf.text(
+            machine.label.toUpperCase(),
+            x + cardWidth / 2,
+            y + 8,
+            { align: "center" }
+        );
 
-        // QR Code
+        // QR Code centré
         const tempDiv = document.createElement("div");
         tempDiv.style.position = "absolute";
         tempDiv.style.left = "-9999px";
@@ -312,23 +324,29 @@ async function exportToPDF() {
 
         if (qrCanvas) {
             const imgData = qrCanvas.toDataURL("image/png");
-            pdf.addImage(imgData, "PNG", x + 5, y + 12, qrSize, qrSize);
+            pdf.addImage(
+                imgData,
+                "PNG",
+                x + (cardWidth - qrSize) / 2,
+                y + titleHeight + 8,
+                qrSize,
+                qrSize
+            );
         }
 
         document.body.removeChild(tempDiv);
 
-        // Liste fichiers
+        // Liste documents
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(9);
 
-        let textX = x + qrSize + 10;
-        let textY = y + 18;
+        let textY = y + titleHeight + qrSize + 18;
 
         Object.keys(machine).forEach(key => {
             if (key !== "label") {
                 machine[key].forEach(item => {
-                    const lines = pdf.splitTextToSize(item.name, cardWidth - qrSize - 15);
-                    pdf.text(lines, textX, textY);
+                    const lines = pdf.splitTextToSize(item.name, cardWidth - 10);
+                    pdf.text(lines, x + cardWidth / 2, textY, { align: "center" });
                     textY += lines.length * 4;
                 });
             }
