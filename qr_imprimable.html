@@ -263,93 +263,80 @@ function displayMachines() {
 async function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
+
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    
-    const colWidth = pageWidth / 2 - 15; // 2 colonnes
-    const rowHeight = 60; // Hauteur pour 3 lignes
-    const qrSize = 40; // Taille du QR code en mm
-    
-    let x = 10;
-    let y = 10;
-    let col = 0;
-    let row = 0;
-    
+
+    const margin = 10;
+    const cardWidth = (pageWidth - margin * 3) / 2;
+    const cardHeight = (pageHeight - margin * 3) / 2;
+
+    const qrSize = 35;
+
+    let index = 0;
     const machineIds = Object.keys(machinesData);
-    
+
     for (let i = 0; i < machineIds.length; i++) {
+        if (index > 0 && index % 4 === 0) {
+            pdf.addPage();
+            index = 0;
+        }
+
+        const col = index % 2;
+        const row = Math.floor(index / 2);
+
+        const x = margin + col * (cardWidth + margin);
+        const y = margin + row * (cardHeight + margin);
+
         const id = machineIds[i];
         const machine = machinesData[id];
         const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
-        
-        // Créer un conteneur temporaire pour le QR code
+
+        // Carte
+        pdf.setDrawColor(180);
+        pdf.roundedRect(x, y, cardWidth, cardHeight, 3, 3);
+
+        // Titre
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(12);
+        pdf.text(machine.label, x + 5, y + 8);
+
+        // QR Code
         const tempDiv = document.createElement("div");
         tempDiv.style.position = "absolute";
         tempDiv.style.left = "-9999px";
         document.body.appendChild(tempDiv);
-        
-        // Générer le QR code et attendre qu'il soit prêt
+
         await generateQRCode(tempDiv, machineURL);
-        
         const qrCanvas = tempDiv.querySelector("canvas");
-        if (!qrCanvas) {
-            console.error("QR Code canvas non trouvé pour:", machine.label);
-            continue;
+
+        if (qrCanvas) {
+            const imgData = qrCanvas.toDataURL("image/png");
+            pdf.addImage(imgData, "PNG", x + 5, y + 12, qrSize, qrSize);
         }
-        
-        const imgData = qrCanvas.toDataURL("image/png");
-        
-        // Dessiner dans le PDF
+
+        document.body.removeChild(tempDiv);
+
+        // Liste fichiers
         pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(11);
-        pdf.setTextColor(0, 0, 0);
-        
-        // Titre de la machine
-        const title = pdf.splitTextToSize(machine.label, colWidth - 5);
-        pdf.text(title, x, y + 5);
-        
-        // QR Code
-        pdf.addImage(imgData, "PNG", x, y + 8, qrSize, qrSize);
-        
-        // Liste des fichiers
-        let listY = y + qrSize + 12;
-        pdf.setFontSize(8);
-        
+        pdf.setFontSize(9);
+
+        let textX = x + qrSize + 10;
+        let textY = y + 18;
+
         Object.keys(machine).forEach(key => {
             if (key !== "label") {
                 machine[key].forEach(item => {
-                    const fileName = pdf.splitTextToSize(item.name, colWidth - 5);
-                    pdf.text(fileName, x, listY);
-                    listY += fileName.length * 3; // Ajuster l'espacement
+                    const lines = pdf.splitTextToSize(item.name, cardWidth - qrSize - 15);
+                    pdf.text(lines, textX, textY);
+                    textY += lines.length * 4;
                 });
             }
         });
-        
-        // Nettoyer le div temporaire
-        document.body.removeChild(tempDiv);
-        
-        // Passer à la position suivante
-        col++;
-        if (col >= 2) {
-            col = 0;
-            x = 10;
-            row++;
-            y += rowHeight;
-        } else {
-            x = pageWidth / 2 + 5;
-        }
-        
-        // Nouvelle page si nécessaire
-        if (row >= 3) {
-            pdf.addPage();
-            x = 10;
-            y = 10;
-            col = 0;
-            row = 0;
-        }
+
+        index++;
     }
-    
-    // Sauvegarder le PDF
+
     pdf.save("QR_Codes_Machines_Ligne_A.pdf");
 }
 
