@@ -115,7 +115,7 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
   const pdf = new jsPDF("p", "mm", "a4");
 
   const machines = document.querySelectorAll(".machine");
-  const perPage = 6;
+  const perPage = 4;
 
   for (let i = 0; i < machines.length; i += perPage) {
     const page = document.createElement("div");
