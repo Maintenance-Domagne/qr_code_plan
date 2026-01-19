@@ -78,7 +78,11 @@ button {
     transition: background-color 0.3s;
 }
 button:hover { background-color: #2980b9; }
-.qr-container { margin: 10px 0; }
+.qr-container { 
+    margin: 10px 0; 
+    width: 128px; 
+    height: 128px;
+}
 .clearfix::after {
     content: "";
     clear: both;
@@ -191,23 +195,40 @@ const machinesData = {
     }
 };
 
-// === Fonction pour générer le QR code ===
-function generateQRCode(container, text) {
+// === Fonction pour générer le QR code et retourner directement l'image ===
+function generateQRCodeImage(text) {
     return new Promise((resolve) => {
-        // Supprimer tout contenu existant
-        container.innerHTML = '';
+        // Créer un canvas directement
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
         
-        const qrCode = new QRCode(container, {
-            text: text,
+        // Générer le QR code directement sur le canvas
+        QRCode.toCanvas(canvas, text, {
             width: 128,
-            height: 128,
-            correctLevel: QRCode.CorrectLevel.M
+            margin: 1,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+            }
+        }, function(error) {
+            if (error) {
+                console.error('Erreur QR code:', error);
+                // Créer un QR code de secours simple
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, 128, 128);
+                ctx.fillStyle = '#000000';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('QR Code', 64, 64);
+                ctx.fillText('Erreur', 64, 80);
+            }
+            
+            // Convertir en URL data
+            const imgData = canvas.toDataURL('image/png');
+            resolve(imgData);
         });
-        
-        // Attendre que le QR code soit généré
-        setTimeout(() => {
-            resolve(qrCode);
-        }, 100);
     });
 }
 
@@ -233,8 +254,13 @@ function displayMachines() {
         qrContainer.className = "qr-container";
         machineDiv.appendChild(qrContainer);
         
-        // Générer le QR code
-        generateQRCode(qrContainer, machineURL);
+        // Générer le QR code pour l'affichage web
+        new QRCode(qrContainer, {
+            text: machineURL,
+            width: 128,
+            height: 128,
+            correctLevel: QRCode.CorrectLevel.M
+        });
         
         // Liste des fichiers
         const filesList = document.createElement("ul");
@@ -263,17 +289,19 @@ function displayMachines() {
 async function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
+    
+    // Configuration de la page
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     
-    const colWidth = pageWidth / 2 - 15; // 2 colonnes
-    const rowHeight = 60; // Hauteur pour 3 lignes
-    const qrSize = 40; // Taille du QR code en mm
+    const margin = 10;
+    const colWidth = (pageWidth - (margin * 3)) / 2;
+    const rowHeight = 60; // 3 lignes par page
+    const qrSize = 40;
     
-    let x = 10;
-    let y = 10;
-    let col = 0;
-    let row = 0;
+    let currentPage = 0;
+    let x = margin;
+    let y = margin;
     
     const machineIds = Object.keys(machinesData);
     
@@ -282,71 +310,63 @@ async function exportToPDF() {
         const machine = machinesData[id];
         const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
         
-        // Créer un conteneur temporaire pour le QR code
-        const tempDiv = document.createElement("div");
-        tempDiv.style.position = "absolute";
-        tempDiv.style.left = "-9999px";
-        document.body.appendChild(tempDiv);
+        // Générer l'image du QR code
+        const qrImage = await generateQRCodeImage(machineURL);
         
-        // Générer le QR code et attendre qu'il soit prêt
-        await generateQRCode(tempDiv, machineURL);
-        
-        const qrCanvas = tempDiv.querySelector("canvas");
-        if (!qrCanvas) {
-            console.error("QR Code canvas non trouvé pour:", machine.label);
-            continue;
+        // Vérifier si on a besoin d'une nouvelle page
+        if (i > 0 && i % 6 === 0) {
+            pdf.addPage();
+            currentPage++;
+            x = margin;
+            y = margin;
+        } else if (i % 2 === 0 && i % 6 !== 0) {
+            // Nouvelle ligne, mais même page
+            x = margin;
+            y += rowHeight;
+        } else if (i % 2 !== 0) {
+            // Deuxième colonne de la même ligne
+            x = margin + colWidth + margin;
         }
         
-        const imgData = qrCanvas.toDataURL("image/png");
-        
-        // Dessiner dans le PDF
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(11);
-        pdf.setTextColor(0, 0, 0);
-        
         // Titre de la machine
-        const title = pdf.splitTextToSize(machine.label, colWidth - 5);
-        pdf.text(title, x, y + 5);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(10);
+        pdf.setTextColor(40, 120, 185);
+        
+        // Ajuster le titre si trop long
+        const title = machine.label;
+        const titleLines = pdf.splitTextToSize(title, colWidth - 5);
+        pdf.text(titleLines, x, y);
         
         // QR Code
-        pdf.addImage(imgData, "PNG", x, y + 8, qrSize, qrSize);
+        try {
+            pdf.addImage(qrImage, "PNG", x, y + 5, qrSize, qrSize);
+        } catch (error) {
+            console.error("Erreur d'ajout d'image:", error);
+            // Dessiner un rectangle de secours
+            pdf.setFillColor(240, 240, 240);
+            pdf.rect(x, y + 5, qrSize, qrSize, 'F');
+            pdf.setTextColor(150, 150, 150);
+            pdf.setFontSize(8);
+            pdf.text("QR Code", x + qrSize/2, y + 5 + qrSize/2, { align: "center" });
+        }
         
         // Liste des fichiers
-        let listY = y + qrSize + 12;
-        pdf.setFontSize(8);
+        let fileY = y + qrSize + 8;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(7);
+        pdf.setTextColor(0, 0, 0);
         
         Object.keys(machine).forEach(key => {
             if (key !== "label") {
                 machine[key].forEach(item => {
-                    const fileName = pdf.splitTextToSize(item.name, colWidth - 5);
-                    pdf.text(fileName, x, listY);
-                    listY += fileName.length * 3; // Ajuster l'espacement
+                    // Tronquer le nom du fichier si trop long
+                    const fileName = item.name.length > 40 ? item.name.substring(0, 37) + "..." : item.name;
+                    pdf.text(fileName, x, fileY, { maxWidth: colWidth - 5 });
+                    fileY += 3.5;
                 });
             }
         });
-        
-        // Nettoyer le div temporaire
-        document.body.removeChild(tempDiv);
-        
-        // Passer à la position suivante
-        col++;
-        if (col >= 2) {
-            col = 0;
-            x = 10;
-            row++;
-            y += rowHeight;
-        } else {
-            x = pageWidth / 2 + 5;
-        }
-        
-        // Nouvelle page si nécessaire
-        if (row >= 3) {
-            pdf.addPage();
-            x = 10;
-            y = 10;
-            col = 0;
-            row = 0;
-        }
     }
     
     // Sauvegarder le PDF
@@ -374,6 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 2000);
         } catch (error) {
             console.error("Erreur lors de la génération du PDF:", error);
+            alert("Erreur lors de la génération du PDF. Veuillez vérifier la console pour plus de détails.");
             button.textContent = "❌ Erreur!";
             setTimeout(() => {
                 button.textContent = originalText;
