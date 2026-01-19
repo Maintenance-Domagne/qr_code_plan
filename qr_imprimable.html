@@ -191,24 +191,37 @@ const machinesData = {
     }
 };
 
-// === Fonction pour générer le QR code ===
+// === Fonction pour générer le QR code avec URL raccourcie ===
 function generateQRCode(container, text) {
     return new Promise((resolve) => {
-        // Supprimer tout contenu existant
         container.innerHTML = '';
         
+        // Utiliser une URL raccourcie pour éviter l'erreur "code length overflow"
+        // On crée une URL plus courte basée sur l'ID
+        const shortURL = `machine:${text.split('machine=')[1]}`;
+        
         const qrCode = new QRCode(container, {
-            text: text,
+            text: shortURL,  // Utiliser l'URL raccourcie
             width: 128,
             height: 128,
-            correctLevel: QRCode.CorrectLevel.M
+            correctLevel: QRCode.CorrectLevel.L // Niveau bas (L) pour plus de capacité
         });
         
-        // Attendre que le QR code soit généré
         setTimeout(() => {
             resolve(qrCode);
         }, 100);
     });
+}
+
+// === Fonction pour obtenir l'URL raccourcie ===
+function getShortURL(id) {
+    // Format court pour le QR code
+    return `machine:${id}`;
+}
+
+// === Fonction pour obtenir l'URL complète pour affichage ===
+function getFullURL(id) {
+    return `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
 }
 
 // === Affichage HTML ===
@@ -218,7 +231,6 @@ function displayMachines() {
     
     Object.keys(machinesData).forEach(id => {
         const machine = machinesData[id];
-        const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
         
         const machineDiv = document.createElement("div");
         machineDiv.className = "machine";
@@ -233,8 +245,8 @@ function displayMachines() {
         qrContainer.className = "qr-container";
         machineDiv.appendChild(qrContainer);
         
-        // Générer le QR code
-        generateQRCode(qrContainer, machineURL);
+        // Générer le QR code avec URL raccourcie
+        generateQRCode(qrContainer, getShortURL(id));
         
         // Liste des fichiers
         const filesList = document.createElement("ul");
@@ -259,6 +271,40 @@ function displayMachines() {
     });
 }
 
+// === Fonction pour générer QR code pour PDF ===
+function generateQRCodeForPDF(text) {
+    return new Promise((resolve) => {
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.left = "-9999px";
+        document.body.appendChild(tempDiv);
+        
+        try {
+            const qrCode = new QRCode(tempDiv, {
+                text: text,
+                width: 128,
+                height: 128,
+                correctLevel: QRCode.CorrectLevel.L // Niveau bas pour plus de capacité
+            });
+            
+            setTimeout(() => {
+                const qrCanvas = tempDiv.querySelector("canvas");
+                if (qrCanvas) {
+                    const imgData = qrCanvas.toDataURL("image/png");
+                    document.body.removeChild(tempDiv);
+                    resolve(imgData);
+                } else {
+                    document.body.removeChild(tempDiv);
+                    resolve(null);
+                }
+            }, 150);
+        } catch (error) {
+            document.body.removeChild(tempDiv);
+            resolve(null);
+        }
+    });
+}
+
 // === Fonction pour exporter en PDF ===
 async function exportToPDF() {
     const { jsPDF } = window.jspdf;
@@ -266,9 +312,9 @@ async function exportToPDF() {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     
-    const colWidth = pageWidth / 2 - 15; // 2 colonnes
-    const rowHeight = 60; // Hauteur pour 3 lignes
-    const qrSize = 40; // Taille du QR code en mm
+    const colWidth = pageWidth / 2 - 15;
+    const rowHeight = 60;
+    const qrSize = 40;
     
     let x = 10;
     let y = 10;
@@ -280,24 +326,15 @@ async function exportToPDF() {
     for (let i = 0; i < machineIds.length; i++) {
         const id = machineIds[i];
         const machine = machinesData[id];
-        const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
         
-        // Créer un conteneur temporaire pour le QR code
-        const tempDiv = document.createElement("div");
-        tempDiv.style.position = "absolute";
-        tempDiv.style.left = "-9999px";
-        document.body.appendChild(tempDiv);
+        // Générer le QR code avec URL raccourcie
+        const shortURL = getShortURL(id);
+        const imgData = await generateQRCodeForPDF(shortURL);
         
-        // Générer le QR code et attendre qu'il soit prêt
-        await generateQRCode(tempDiv, machineURL);
-        
-        const qrCanvas = tempDiv.querySelector("canvas");
-        if (!qrCanvas) {
-            console.error("QR Code canvas non trouvé pour:", machine.label);
+        if (!imgData) {
+            console.warn("QR Code non généré pour:", machine.label);
             continue;
         }
-        
-        const imgData = qrCanvas.toDataURL("image/png");
         
         // Dessiner dans le PDF
         pdf.setFont("helvetica", "normal");
@@ -320,13 +357,10 @@ async function exportToPDF() {
                 machine[key].forEach(item => {
                     const fileName = pdf.splitTextToSize(item.name, colWidth - 5);
                     pdf.text(fileName, x, listY);
-                    listY += fileName.length * 3; // Ajuster l'espacement
+                    listY += 4;
                 });
             }
         });
-        
-        // Nettoyer le div temporaire
-        document.body.removeChild(tempDiv);
         
         // Passer à la position suivante
         col++;
