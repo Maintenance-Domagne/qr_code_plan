@@ -11,6 +11,10 @@ h1 { text-align: center; margin-bottom: 20px; }
 .machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
 .machine h2 { font-size: 16px; margin: 0 0 10px 0; text-align: center; }
 .qr { width: 128px; height: 128px; margin-bottom: 10px; }
+ul { list-style: none; padding-left: 0; text-align: center; margin: 0; }
+li { margin: 4px 0; font-size: 12px; }
+a { text-decoration: none; color: #2980b9; }
+a:hover { text-decoration: underline; }
 button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
 @media print { button { display: none; } }
 </style>
@@ -21,28 +25,32 @@ button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: point
 <button id="exportPDF">📄 Exporter en PDF</button>
 <div id="container"></div>
 
-<!-- Librairies nécessaires -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-// === Données des machines ===
+// === Données complètes avec tous les fichiers ===
 const data = {
-  "depalettiseur": { "label": "1- Dépalettiseur" },
-  "decaisseuse": { "label": "2- Décaisseuse" },
-  "laveuse": { "label": "4- Laveuse" },
-  "rinçeuse": { "label": "6- Rinçeuse" },
-  "soutireuse": { "label": "7- Soutireuse" },
-  "boucheuse": { "label": "9- Boucheuse" },
-  "visseuse_alu": { "label": "10- Visseuse alu" },
-  "museleuse": { "label": "11- Museleuse" },
-  "encaisseuse": { "label": "16- Encaisseuse" },
-  "encartonneuse": { "label": "19- Encartonneuse" },
-  "palettiseur": { "label": "21- Palettiseur" },
-  "filmeuse": { "label": "22- Filmeuse" }
+  "depalettiseur": {
+    "label": "1- Dépalettiseur",
+    "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"}],
+    "Schéma_pneumatique":[{"name":"Schéma pneumatique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"}],
+    "Fichier_réglages":[{"name":"Fichier de réglages","file":"Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"}]
+  },
+  "decaisseuse": {"label":"2- Décaisseuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/2- Décaisseuse/Schéma_électrique/Schéma électrique décaisseuse.pdf"}]},
+  "laveuse": {"label":"4- Laveuse","Schéma_électrique_p1_69":[{"name":"Schéma électrique page 1 à 69","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"}],"Schéma_électrique_p70_140":[{"name":"Schéma électrique page 70 à 140","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf"}]},
+  "rinçeuse": {"label":"6- Rinçeuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/6- Rinçeuse/Schéma_électrique/Plan élec Rinceuse 2015pdf.pdf"}]},
+  "soutireuse": {"label":"7- Soutireuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/7- Soutireuse/Schéma_électrique/Schéma électrique soutireuse.pdf"}]},
+  "boucheuse": {"label":"9- Boucheuse","Schéma_électrique":[{"name":"Schéma électrique boucheuse","file":"Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique boucheuse.pdf"}],"Schéma_électrique_trémie_local_bouchon":[{"name":"Schéma électrique trémie local bouchons","file":"Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique trémie local bouchons.pdf"}]},
+  "visseuse_alu": {"label":"10- Visseuse alu","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"}]},
+  "museleuse": {"label":"11- Museleuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/11- Museleuse/Schéma_électrique/Schéma électrique museleuse.pdf"}]},
+  "encaisseuse": {"label":"16- Encaisseuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/16- Encaisseuse/Schéma_électrique/ECLOR_ENCAISSEUSE BOUTEILLES_IND01.pdf"}]},
+  "encartonneuse": {"label":"19- Encartonneuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/19- Encartonneuse/Schéma_électrique/Schéma électrique OCME.pdf"}]},
+  "palettiseur": {"label":"21- Palettiseur","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf"}],"Schéma_électrique_échanges":[{"name":"Schéma électrique des échanges de données","file":"Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec ajouts.pdf"}]},
+  "filmeuse": {"label":"22- Filmeuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"}],"Schéma_électrique_échanges":[{"name":"Schéma électrique des échanges de données","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Echanges de données.pdf"}],"Schéma_électrique_retrofit":[{"name":"Schéma électrique du rétrofit variateur","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/SCHEMA W0223A ELITE TOPPAL 2025-03-12 MODIFICATION P0967A.pdf"}]}
 };
 
-// === Affichage HTML des machines ===
+// === Affichage HTML ===
 const container = document.getElementById("container");
 container.innerHTML = "";
 let pageDiv = document.createElement("div");
@@ -67,6 +75,18 @@ for (const id in data) {
   const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
   new QRCode(qrDiv, { text: machineURL, width: 128, height: 128 });
 
+  // Liste des fichiers PDF
+  for (const folder in machine) {
+    if (folder === "label") continue;
+    const ul = document.createElement("ul");
+    machine[folder].forEach(item => {
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="${item.file}" target="_blank">${item.name}</a>`;
+      ul.appendChild(li);
+    });
+    div.appendChild(ul);
+  }
+
   pageDiv.appendChild(div);
   count++;
 
@@ -83,18 +103,18 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
   const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-
-  const gap = 10;      // espace entre QR
-  const qrSize = 50;   // taille QR en mm
-  const colWidth = (pageWidth - gap*3) / 2; // 2 colonnes
+  const gap = 10;
+  const qrSize = 50;
+  const colWidth = (pageWidth - gap*3) / 2;
 
   let x = gap, y = gap;
   let col = 0;
 
   for (const id in data) {
+    const machine = data[id];
     const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
 
-    // Canvas temporaire pour QR
+    // QR code en canvas
     const tempDiv = document.createElement("div");
     new QRCode(tempDiv, { text: machineURL, width: 128, height: 128 });
     const qrCanvas = tempDiv.querySelector("canvas");
@@ -102,20 +122,20 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
 
     pdf.addImage(imgData, "PNG", x, y, qrSize, qrSize);
     pdf.setFontSize(10);
-    pdf.text(data[id].label, x, y + qrSize + 5);
+    pdf.text(machine.label, x, y + qrSize + 4);
 
-    if (col === 0) {
-      x += colWidth + gap;
-      col = 1;
-    } else {
-      x = gap;
-      col = 0;
-      y += qrSize + 15; // passer à la ligne suivante
-      if (y + qrSize + 15 > pageHeight - gap) {
-        pdf.addPage();
-        y = gap;
-      }
+    // Ajouter les fichiers PDF en texte
+    let fileY = y + qrSize + 8;
+    for (const folder in machine) {
+      if (folder === "label") continue;
+      machine[folder].forEach(item => {
+        pdf.text(`- ${item.name}`, x, fileY);
+        fileY += 5;
+      });
     }
+
+    if (col === 0) { x += colWidth + gap; col = 1; }
+    else { x = gap; col = 0; y = fileY + gap; if (y + qrSize + 20 > pageHeight) { pdf.addPage(); y = gap; } }
   }
 
   pdf.save("QR_Codes_Machines.pdf");
@@ -123,4 +143,4 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
 </script>
 
 </body>
-</html
+</html>
