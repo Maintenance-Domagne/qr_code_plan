@@ -24,10 +24,6 @@ button {
   cursor: pointer;
 }
 
-.page {
-  page-break-after: always;
-}
-
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -39,34 +35,21 @@ button {
   border-radius: 8px;
   padding: 12px;
   text-align: center;
-  break-inside: avoid;
 }
 
 .machine h2 {
   font-size: 16px;
-  margin: 0 0 10px 0;
+  margin-bottom: 10px;
 }
 
 .qr {
-  margin: 0 auto 10px auto;
   width: 128px;
   height: 128px;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-li {
-  font-size: 12px;
-  margin: 3px 0;
+  margin: 0 auto;
 }
 
 @media print {
   button { display: none; }
-  body { padding: 0; }
 }
 </style>
 </head>
@@ -76,21 +59,17 @@ li {
 <h1>QR Codes Machines – Embouteillage Ligne A</h1>
 <button id="exportPDF">📄 Exporter en PDF</button>
 
-<div id="container"></div>
+<div id="container" class="grid"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-/* ============================================================
-   URL DE BASE (NE PAS TOUCHER)
-============================================================ */
+// ================= URL DE BASE =================
 const BASE_URL = "https://maintenance-domagne.github.io/qr_code_plan/index.html";
 
-/* ============================================================
-   DONNÉES MACHINES
-============================================================ */
+// ================= DONNÉES =====================
 const data = {
   "depalettiseur": { "label": "1- Dépalettiseur" },
   "decaisseuse": { "label": "2- Décaisseuse" },
@@ -106,36 +85,20 @@ const data = {
   "filmeuse": { "label": "22- Filmeuse" }
 };
 
-/* ============================================================
-   GÉNÉRATION DES QR CODES (6 PAR PAGE)
-============================================================ */
+// ================= AFFICHAGE ====================
 const container = document.getElementById("container");
-const ids = Object.keys(data);
-let page, grid;
 
-ids.forEach((id, index) => {
-
-  if (index % 6 === 0) {
-    page = document.createElement("div");
-    page.className = "page";
-
-    grid = document.createElement("div");
-    grid.className = "grid";
-
-    page.appendChild(grid);
-    container.appendChild(page);
-  }
-
-  const machine = document.createElement("div");
-  machine.className = "machine";
+Object.keys(data).forEach(id => {
+  const div = document.createElement("div");
+  div.className = "machine";
 
   const h2 = document.createElement("h2");
   h2.textContent = data[id].label;
-  machine.appendChild(h2);
+  div.appendChild(h2);
 
   const qrDiv = document.createElement("div");
   qrDiv.className = "qr";
-  machine.appendChild(qrDiv);
+  div.appendChild(qrDiv);
 
   new QRCode(qrDiv, {
     text: `${BASE_URL}?machine=${id}`,
@@ -143,28 +106,41 @@ ids.forEach((id, index) => {
     height: 128
   });
 
-  grid.appendChild(machine);
+  container.appendChild(div);
 });
 
-/* ============================================================
-   EXPORT PDF MULTI-PAGES (PAS COUPÉ)
-============================================================ */
+// ================= EXPORT PDF ====================
 document.getElementById("exportPDF").addEventListener("click", async () => {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
 
-  const pages = document.querySelectorAll(".page");
+  const machines = document.querySelectorAll(".machine");
+  const perPage = 6;
 
-  for (let i = 0; i < pages.length; i++) {
-    const canvas = await html2canvas(pages[i], { scale: 2 });
+  for (let i = 0; i < machines.length; i += perPage) {
+    const page = document.createElement("div");
+    page.className = "grid";
+    page.style.padding = "20px";
+    page.style.background = "white";
+
+    machines.forEach((m, index) => {
+      if (index >= i && index < i + perPage) {
+        page.appendChild(m.cloneNode(true));
+      }
+    });
+
+    document.body.appendChild(page);
+
+    const canvas = await html2canvas(page, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
 
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgProps = pdf.getImageProperties(imgData);
-    const imgHeight = (imgProps.height * pageWidth) / imgProps.width;
+    const width = pdf.internal.pageSize.getWidth();
+    const height = (canvas.height * width) / canvas.width;
 
     if (i > 0) pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, imgHeight);
+    pdf.addImage(imgData, "PNG", 0, 0, width, height);
+
+    document.body.removeChild(page);
   }
 
   pdf.save("QR_Codes_Embouteillage_Ligne_A.pdf");
