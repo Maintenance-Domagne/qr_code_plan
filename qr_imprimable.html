@@ -115,35 +115,59 @@ const machinesData = [
     { id: "filmeuse", label: "22- Filmeuse", files: [{ name: "Schéma électrique", file: "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf" }] }
 ];
 
-// Fonction pour générer un QR code avec un timeout
-function createQRCode(element, text) {
+// URL raccourcie pour les QR codes
+function getShortMachineURL(machineId) {
+    // Utiliser une URL plus courte pour éviter l'erreur "code length overflow"
+    // On peut utiliser juste l'ID de la machine et reconstruire l'URL côté client
+    return `https://md.me/qr/${machineId}`; // URL très courte
+}
+
+// Fonction pour générer un QR code avec URL raccourcie
+function createQRCode(element, machineId) {
     return new Promise((resolve) => {
         try {
-            // Créer un nouvel élément QR code
+            const url = getShortMachineURL(machineId);
             const qrDiv = document.createElement('div');
+            
+            // Utiliser un niveau de correction plus bas pour permettre plus de données
             new QRCode(qrDiv, {
-                text: text,
+                text: url,
                 width: 128,
                 height: 128,
-                correctLevel: QRCode.CorrectLevel.M
+                correctLevel: QRCode.CorrectLevel.L // L (7%), plus de capacité
             });
             
-            // Attendre que le QR code soit généré
             setTimeout(() => {
                 const canvas = qrDiv.querySelector('canvas');
                 if (canvas) {
                     element.innerHTML = '';
                     element.appendChild(canvas);
-                    resolve(true);
-                } else {
-                    // Fallback
-                    element.innerHTML = '<div style="width:128px;height:128px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#666;">QR Code</div>';
-                    resolve(true);
                 }
+                resolve(true);
             }, 50);
         } catch (error) {
-            element.innerHTML = '<div style="width:128px;height:128px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#666;">Erreur</div>';
-            resolve(true);
+            // Si l'URL est encore trop longue, utiliser une URL encore plus courte
+            try {
+                const qrDiv = document.createElement('div');
+                new QRCode(qrDiv, {
+                    text: machineId, // Juste l'ID
+                    width: 128,
+                    height: 128,
+                    correctLevel: QRCode.CorrectLevel.L
+                });
+                
+                setTimeout(() => {
+                    const canvas = qrDiv.querySelector('canvas');
+                    if (canvas) {
+                        element.innerHTML = '';
+                        element.appendChild(canvas);
+                    }
+                    resolve(true);
+                }, 50);
+            } catch (error2) {
+                element.innerHTML = '<div style="width:128px;height:128px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#666;">QR Code</div>';
+                resolve(true);
+            }
         }
     });
 }
@@ -165,12 +189,10 @@ async function displayMachines() {
         // Conteneur QR code
         const qrContainer = document.createElement('div');
         qrContainer.className = 'qr-container';
-        qrContainer.id = `qr-${machine.id}`;
         machineDiv.appendChild(qrContainer);
         
-        // Générer le QR code
-        const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${machine.id}`;
-        await createQRCode(qrContainer, machineURL);
+        // Générer le QR code avec URL raccourcie
+        await createQRCode(qrContainer, machine.id);
         
         // Liste des fichiers
         if (machine.files && machine.files.length > 0) {
@@ -194,28 +216,89 @@ async function displayMachines() {
     }
 }
 
-// Fonction pour générer un QR code pour le PDF
-function generateQRCodeForPDF(text) {
+// Fonction pour générer un QR code pour le PDF avec gestion d'erreur
+function generateQRCodeForPDF(machineId) {
     return new Promise((resolve) => {
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
         tempDiv.style.left = '-9999px';
         document.body.appendChild(tempDiv);
         
-        new QRCode(tempDiv, {
-            text: text,
-            width: 128,
-            height: 128,
-            correctLevel: QRCode.CorrectLevel.M
-        });
+        // Essayer avec l'URL originale d'abord
+        const fullURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${machineId}`;
+        const shortURL = getShortMachineURL(machineId);
         
-        setTimeout(() => {
-            const canvas = tempDiv.querySelector('canvas');
-            if (canvas) {
-                const imgData = canvas.toDataURL('image/png');
+        try {
+            // Essayer d'abord avec l'URL raccourcie
+            new QRCode(tempDiv, {
+                text: shortURL,
+                width: 128,
+                height: 128,
+                correctLevel: QRCode.CorrectLevel.L // Niveau bas pour plus de capacité
+            });
+            
+            setTimeout(() => {
+                const canvas = tempDiv.querySelector('canvas');
+                let imgData;
+                
+                if (canvas) {
+                    imgData = canvas.toDataURL('image/png');
+                } else {
+                    // Créer un canvas de secours
+                    const fallbackCanvas = document.createElement('canvas');
+                    fallbackCanvas.width = 128;
+                    fallbackCanvas.height = 128;
+                    const ctx = fallbackCanvas.getContext('2d');
+                    ctx.fillStyle = '#f0f0f0';
+                    ctx.fillRect(0, 0, 128, 128);
+                    ctx.fillStyle = '#333';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(machineId, 64, 64);
+                    imgData = fallbackCanvas.toDataURL('image/png');
+                }
+                
+                document.body.removeChild(tempDiv);
                 resolve(imgData);
-            } else {
-                // Créer un canvas de secours
+            }, 100);
+            
+        } catch (error) {
+            // Si échec, essayer avec juste l'ID
+            try {
+                tempDiv.innerHTML = '';
+                new QRCode(tempDiv, {
+                    text: machineId,
+                    width: 128,
+                    height: 128,
+                    correctLevel: QRCode.CorrectLevel.L
+                });
+                
+                setTimeout(() => {
+                    const canvas = tempDiv.querySelector('canvas');
+                    let imgData;
+                    
+                    if (canvas) {
+                        imgData = canvas.toDataURL('image/png');
+                    } else {
+                        const fallbackCanvas = document.createElement('canvas');
+                        fallbackCanvas.width = 128;
+                        fallbackCanvas.height = 128;
+                        const ctx = fallbackCanvas.getContext('2d');
+                        ctx.fillStyle = '#f0f0f0';
+                        ctx.fillRect(0, 0, 128, 128);
+                        ctx.fillStyle = '#333';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(machineId, 64, 64);
+                        imgData = fallbackCanvas.toDataURL('image/png');
+                    }
+                    
+                    document.body.removeChild(tempDiv);
+                    resolve(imgData);
+                }, 100);
+                
+            } catch (error2) {
+                // Dernier recours
                 const fallbackCanvas = document.createElement('canvas');
                 fallbackCanvas.width = 128;
                 fallbackCanvas.height = 128;
@@ -225,11 +308,12 @@ function generateQRCodeForPDF(text) {
                 ctx.fillStyle = '#333';
                 ctx.font = '12px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('QR Code', 64, 64);
+                ctx.fillText(machineId, 64, 64);
+                
+                document.body.removeChild(tempDiv);
                 resolve(fallbackCanvas.toDataURL('image/png'));
             }
-            document.body.removeChild(tempDiv);
-        }, 100);
+        }
     });
 }
 
@@ -243,7 +327,7 @@ async function exportToPDF() {
     
     const margin = 10;
     const colWidth = (pageWidth - margin * 3) / 2;
-    const rowHeight = 60;
+    const rowHeight = 65; // Un peu plus d'espace
     const qrSize = 40;
     
     let currentPage = 0;
@@ -255,8 +339,7 @@ async function exportToPDF() {
     // Générer tous les QR codes d'abord
     const qrImages = [];
     for (const machine of machinesData) {
-        const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${machine.id}`;
-        const qrImage = await generateQRCodeForPDF(machineURL);
+        const qrImage = await generateQRCodeForPDF(machine.id);
         qrImages.push({
             machine: machine,
             image: qrImage
@@ -282,7 +365,7 @@ async function exportToPDF() {
             }
         }
         
-        // Vérifier si on doit passer à une nouvelle page
+        // Vérifier si on doit passer à une nouvelle page (3 lignes par page)
         if (currentRow >= 3) {
             doc.addPage();
             currentPage++;
@@ -294,27 +377,31 @@ async function exportToPDF() {
         
         // Ajouter le titre
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(10);
+        doc.setFontSize(11);
         doc.setTextColor(41, 128, 185);
         doc.text(machine.label, x, y, { maxWidth: colWidth - 5 });
         
         // Ajouter le QR code
         try {
-            doc.addImage(image, 'PNG', x, y + 5, qrSize, qrSize);
+            doc.addImage(image, 'PNG', x, y + 6, qrSize, qrSize);
         } catch (e) {
-            console.error('Erreur ajout image:', e);
+            console.warn('Impossible d\'ajouter l\'image QR pour:', machine.label);
         }
         
         // Ajouter les fichiers
-        let textY = y + qrSize + 10;
+        let textY = y + qrSize + 12;
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7);
+        doc.setFontSize(8);
         doc.setTextColor(0, 0, 0);
         
         machine.files.forEach(file => {
-            const fileName = file.name.length > 40 ? file.name.substring(0, 37) + '...' : file.name;
+            // Tronquer les noms trop longs
+            const maxLength = 45;
+            const fileName = file.name.length > maxLength ? 
+                file.name.substring(0, maxLength - 3) + '...' : 
+                file.name;
             doc.text(fileName, x, textY, { maxWidth: colWidth - 5 });
-            textY += 3.5;
+            textY += 4;
         });
     }
     
@@ -342,7 +429,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 exportBtn.disabled = false;
             }, 2000);
         } catch (error) {
-            console.error('Erreur:', error);
+            console.error('Erreur PDF:', error);
+            alert('Erreur lors de la génération du PDF. Vérifiez la console pour plus de détails.');
             exportBtn.textContent = '❌ Erreur';
             setTimeout(() => {
                 exportBtn.textContent = originalText;
