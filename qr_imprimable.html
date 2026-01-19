@@ -25,24 +25,66 @@ button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: point
 <div id="container">Chargement...</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 // === Données complètes ===
 const data = {
-  "depalettiseur": { "label": "1- Dépalettiseur", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"}], "Schéma_pneumatique":[{"name":"Schéma pneumatique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"}], "Fichier_réglages":[{"name":"Fichier de réglages","file":"Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"}]},
-  "decaisseuse": { "label": "2- Décaisseuse", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/2- Décaisseuse/Schéma_électrique/Schéma électrique décaisseuse.pdf"}]},
-  "laveuse": { "label": "4- Laveuse", "Schéma_électrique_p1_69":[{"name":"Schéma électrique page 1 à 69","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"}], "Schéma_électrique_p70_140":[{"name":"Schéma électrique page 70 à 140","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf"}]},
-  "rinçeuse": { "label": "6- Rinçeuse", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/6- Rinçeuse/Schéma_électrique/Plan élec Rinceuse 2015pdf.pdf"}]},
-  "soutireuse": { "label": "7- Soutireuse", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/7- Soutireuse/Schéma_électrique/Schéma électrique soutireuse.pdf"}]},
-  "boucheuse": { "label": "9- Boucheuse", "Schéma_électrique":[{"name":"Schéma électrique boucheuse","file":"Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique boucheuse.pdf"}], "Schéma_électrique_trémie_local_bouchon":[{"name":"Schéma électrique trémie local bouchons","file":"Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique trémie local bouchons.pdf"}]},
-  "visseuse_alu": { "label": "10- Visseuse alu", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"}]},
-  "museleuse": { "label": "11- Museleuse", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/11- Museleuse/Schéma_électrique/Schéma électrique museleuse.pdf"}]},
-  "encaisseuse": { "label": "16- Encaisseuse", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/16- Encaisseuse/Schéma_électrique/ECLOR_ENCAISSEUSE BOUTEILLES_IND01.pdf"}]},
-  "encartonneuse": { "label": "19- Encartonneuse", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/19- Encartonneuse/Schéma_électrique/Schéma électrique OCME.pdf"}]},
-  "palettiseur": { "label": "21- Palettiseur", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf"}], "Schéma_électrique_échanges":[{"name":"Schéma électrique des échanges de données","file":"Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec ajouts.pdf"}]},
-  "filmeuse": { "label": "22- Filmeuse", "Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"}], "Schéma_électrique_échanges":[{"name":"Schéma électrique des échanges de données","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Echanges de données.pdf"}], "Schéma_électrique_retrofit":[{"name":"Schéma électrique du rétrofit variateur","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/SCHEMA W0223A ELITE TOPPAL 2025-03-12 MODIFICATION P0967A.pdf"}]}
+  "depalettiseur": {
+    "label": "1- Dépalettiseur",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"}],
+    "Schéma_pneumatique": [{"name":"Schéma pneumatique","file":"Embouteillage_ligne_A/1- Dépalettiseur/Schéma_pneumatique/C_C22077ABE - SCHEMA PNEUMATIQUE.pdf"}],
+    "Fichier_réglages": [{"name":"Fichier de réglages","file":"Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"}]
+  },
+  "decaisseuse": {
+    "label": "2- Décaisseuse",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/2- Décaisseuse/Schéma_électrique/Schéma électrique décaisseuse.pdf"}]
+  },
+  "laveuse": {
+    "label": "4- Laveuse",
+    "Schéma_électrique_p1_69": [{"name":"Schéma électrique page 1 à 69","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"}],
+    "Schéma_électrique_p70_140": [{"name":"Schéma électrique page 70 à 140","file":"Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf"}]
+  },
+  "rinçeuse": {
+    "label": "6- Rinçeuse",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/6- Rinçeuse/Schéma_électrique/Plan élec Rinceuse 2015pdf.pdf"}]
+  },
+  "soutireuse": {
+    "label": "7- Soutireuse",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/7- Soutireuse/Schéma_électrique/Schéma électrique soutireuse.pdf"}]
+  },
+  "boucheuse": {
+    "label": "9- Boucheuse",
+    "Schéma_électrique": [{"name":"Schéma électrique boucheuse","file":"Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique boucheuse.pdf"}],
+    "Schéma_électrique_trémie_local_bouchon": [{"name":"Schéma électrique trémie local bouchons","file":"Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique trémie local bouchons.pdf"}]
+  },
+  "visseuse_alu": {
+    "label": "10- Visseuse alu",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"}]
+  },
+  "museleuse": {
+    "label": "11- Museleuse",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/11- Museleuse/Schéma_électrique/Schéma électrique museleuse.pdf"}]
+  },
+  "encaisseuse": {
+    "label": "16- Encaisseuse",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/16- Encaisseuse/Schéma_électrique/ECLOR_ENCAISSEUSE BOUTEILLES_IND01.pdf"}]
+  },
+  "encartonneuse": {
+    "label": "19- Encartonneuse",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/19- Encartonneuse/Schéma_électrique/Schéma électrique OCME.pdf"}]
+  },
+  "palettiseur": {
+    "label": "21- Palettiseur",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf"}],
+    "Schéma_électrique_échanges": [{"name":"Schéma électrique des échanges de données","file":"Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec ajouts.pdf"}]
+  },
+  "filmeuse": {
+    "label": "22- Filmeuse",
+    "Schéma_électrique": [{"name":"Schéma électrique","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"}],
+    "Schéma_électrique_échanges": [{"name":"Schéma électrique des échanges de données","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Echanges de données.pdf"}],
+    "Schéma_électrique_retrofit": [{"name":"Schéma électrique du rétrofit variateur","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/SCHEMA W0223A ELITE TOPPAL 2025-03-12 MODIFICATION P0967A.pdf"}]
+  }
 };
 
 // === Affichage des machines ===
@@ -82,29 +124,40 @@ for (const id in data) {
   container.appendChild(div);
 }
 
-// === Export PDF via html2canvas (fiable pour toutes les machines) ===
-document.getElementById("exportPDF").addEventListener("click", async () => {
+// === Export PDF ===
+document.getElementById("exportPDF").addEventListener("click", () => {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const scale = 2;
 
-  const containerClone = container.cloneNode(true);
-  containerClone.style.width = pageWidth + "mm";
-  document.body.appendChild(containerClone);
+  let y = 10;
+  let x = 10;
+  const qrSize = 40; // en mm
+  const gap = 10;
 
-  // Générer le canvas avec html2canvas
-  const canvas = await html2canvas(containerClone, { scale, useCORS: true });
-  const imgData = canvas.toDataURL("image/png");
-  const imgProps = pdf.getImageProperties(imgData);
-  const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+  for (const id in data) {
+    const machine = data[id];
+    const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
 
-  pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
+    pdf.setFontSize(10);
+    pdf.text(machine.label, x, y);
+
+    // Générer QR code dans canvas temporaire
+    const tempDiv = document.createElement("div");
+    new QRCode(tempDiv, { text: machineURL, width: 128, height: 128 });
+    const qrCanvas = tempDiv.querySelector("canvas");
+    const imgData = qrCanvas.toDataURL("image/png");
+
+    pdf.addImage(imgData, "PNG", x, y + 2, qrSize, qrSize);
+
+    y += qrSize + gap + 5;
+    if (y + qrSize > pageHeight - 10) y = 10; // nouvelle colonne ou page
+  }
+
   pdf.save("QR_Codes_Machines.pdf");
-
-  containerClone.remove();
 });
 </script>
+
 </body>
 </html>
