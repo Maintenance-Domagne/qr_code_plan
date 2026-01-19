@@ -2,74 +2,31 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>QR Codes Machines – Embouteillage Ligne A</title>
+<title>QR Codes Machines - PDF</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-button {
-  display: block;
-  margin: 0 auto 20px auto;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.machine {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 12px;
-  text-align: center;
-}
-
-.machine h2 {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.qr {
-  width: 128px;
-  height: 128px;
-  margin: 0 auto;
-}
-
-@media print {
-  button { display: none; }
-}
+body { font-family: Arial, sans-serif; padding: 20px; }
+h1 { text-align: center; margin-bottom: 20px; }
+.page { display: flex; flex-wrap: wrap; justify-content: space-between; page-break-after: always; }
+.machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
+.machine h2 { font-size: 16px; margin: 0 0 10px 0; text-align: center; }
+.qr { width: 128px; height: 128px; margin-bottom: 10px; }
+button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
+@media print { button { display: none; } }
 </style>
 </head>
-
 <body>
 
-<h1>QR Codes Machines – Embouteillage Ligne A</h1>
+<h1>QR Codes Machines - Embouteillage Ligne A</h1>
 <button id="exportPDF">📄 Exporter en PDF</button>
+<div id="container"></div>
 
-<div id="container" class="grid"></div>
-
+<!-- Librairies nécessaires -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-// ================= URL DE BASE =================
-const BASE_URL = "https://maintenance-domagne.github.io/qr_code_plan/index.html";
-
-// ================= DONNÉES =====================
+// === Données des machines ===
 const data = {
   "depalettiseur": { "label": "1- Dépalettiseur" },
   "decaisseuse": { "label": "2- Décaisseuse" },
@@ -85,67 +42,85 @@ const data = {
   "filmeuse": { "label": "22- Filmeuse" }
 };
 
-// ================= AFFICHAGE ====================
+// === Affichage HTML des machines ===
 const container = document.getElementById("container");
+container.innerHTML = "";
+let pageDiv = document.createElement("div");
+pageDiv.className = "page";
+container.appendChild(pageDiv);
+let count = 0;
 
-Object.keys(data).forEach(id => {
+for (const id in data) {
+  const machine = data[id];
+
   const div = document.createElement("div");
   div.className = "machine";
 
   const h2 = document.createElement("h2");
-  h2.textContent = data[id].label;
+  h2.textContent = machine.label;
   div.appendChild(h2);
 
   const qrDiv = document.createElement("div");
   qrDiv.className = "qr";
   div.appendChild(qrDiv);
 
-  new QRCode(qrDiv, {
-    text: `${BASE_URL}?machine=${id}`,
-    width: 128,
-    height: 128
-  });
+  const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
+  new QRCode(qrDiv, { text: machineURL, width: 128, height: 128 });
 
-  container.appendChild(div);
-});
+  pageDiv.appendChild(div);
+  count++;
 
-// ================= EXPORT PDF ====================
+  if (count % 6 === 0) {
+    pageDiv = document.createElement("div");
+    pageDiv.className = "page";
+    container.appendChild(pageDiv);
+  }
+}
+
+// === Export PDF ===
 document.getElementById("exportPDF").addEventListener("click", async () => {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-  const machines = document.querySelectorAll(".machine");
-  const perPage = 6;
+  const gap = 10;      // espace entre QR
+  const qrSize = 50;   // taille QR en mm
+  const colWidth = (pageWidth - gap*3) / 2; // 2 colonnes
 
-  for (let i = 0; i < machines.length; i += perPage) {
-    const page = document.createElement("div");
-    page.className = "grid";
-    page.style.padding = "20px";
-    page.style.background = "white";
+  let x = gap, y = gap;
+  let col = 0;
 
-    machines.forEach((m, index) => {
-      if (index >= i && index < i + perPage) {
-        page.appendChild(m.cloneNode(true));
+  for (const id in data) {
+    const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
+
+    // Canvas temporaire pour QR
+    const tempDiv = document.createElement("div");
+    new QRCode(tempDiv, { text: machineURL, width: 128, height: 128 });
+    const qrCanvas = tempDiv.querySelector("canvas");
+    const imgData = qrCanvas.toDataURL("image/png");
+
+    pdf.addImage(imgData, "PNG", x, y, qrSize, qrSize);
+    pdf.setFontSize(10);
+    pdf.text(data[id].label, x, y + qrSize + 5);
+
+    if (col === 0) {
+      x += colWidth + gap;
+      col = 1;
+    } else {
+      x = gap;
+      col = 0;
+      y += qrSize + 15; // passer à la ligne suivante
+      if (y + qrSize + 15 > pageHeight - gap) {
+        pdf.addPage();
+        y = gap;
       }
-    });
-
-    document.body.appendChild(page);
-
-    const canvas = await html2canvas(page, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
-
-    const width = pdf.internal.pageSize.getWidth();
-    const height = (canvas.height * width) / canvas.width;
-
-    if (i > 0) pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, 0, width, height);
-
-    document.body.removeChild(page);
+    }
   }
 
-  pdf.save("QR_Codes_Embouteillage_Ligne_A.pdf");
+  pdf.save("QR_Codes_Machines.pdf");
 });
 </script>
 
 </body>
-</html>
+</html
