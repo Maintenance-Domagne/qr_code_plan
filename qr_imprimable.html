@@ -11,30 +11,21 @@ h1 { text-align: center; margin-bottom: 20px; }
 .machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
 .machine h2 { font-size: 16px; margin: 0 0 10px 0; text-align: center; }
 .qr { width: 128px; height: 128px; margin-bottom: 10px; }
-ul { list-style: none; padding-left: 0; text-align: center; }
-li { margin: 4px 0; }
-a { text-decoration: none; color: #2980b9; }
-a:hover { text-decoration: underline; }
 button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
-@media print {
-  body { padding: 0; }
-  .machine { page-break-inside: avoid; }
-  button { display: none; }
-}
+@media print { button { display: none; } }
 </style>
 </head>
 <body>
 
 <h1>QR Codes Machines - Embouteillage Ligne A</h1>
 <button id="exportPDF">📄 Exporter en PDF</button>
-<div id="container">Chargement...</div>
+<div id="container"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-// === Données complètes ===
+// === Données ===
 const data = {
   "depalettiseur": { "label": "1- Dépalettiseur" },
   "decaisseuse": { "label": "2- Décaisseuse" },
@@ -72,7 +63,7 @@ for (const id in data) {
   qrDiv.className = "qr";
   div.appendChild(qrDiv);
 
-  // QR code vers l'URL de la machine
+  // QR code → URL de la machine
   const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
   new QRCode(qrDiv, { text: machineURL, width: 128, height: 128 });
 
@@ -80,26 +71,54 @@ for (const id in data) {
   count++;
 
   // 6 machines par page
-  if (count % 6 === 0 && count < Object.keys(data).length) {
+  if (count % 6 === 0) {
     pageDiv = document.createElement("div");
     pageDiv.className = "page";
     container.appendChild(pageDiv);
   }
 }
 
-// === Export PDF ===
-document.getElementById("exportPDF").addEventListener("click", () => {
-  html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
-    const imgData = canvas.toDataURL("image/png");
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+// === Export PDF page par page ===
+document.getElementById("exportPDF").addEventListener("click", async () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const gap = 10; // espace entre QR codes
+  const qrSize = 50; // QR en mm
+  const colWidth = (pageWidth - gap * 3) / 2; // 2 colonnes
 
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
-    pdf.save("QR_Codes_Machines.pdf");
-  });
+  let x = gap, y = gap;
+  let col = 0;
+
+  for (const id in data) {
+    const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
+    
+    // Canvas temporaire pour QR
+    const tempDiv = document.createElement("div");
+    new QRCode(tempDiv, { text: machineURL, width: 128, height: 128 });
+    const qrCanvas = tempDiv.querySelector("canvas");
+    const imgData = qrCanvas.toDataURL("image/png");
+
+    pdf.addImage(imgData, "PNG", x, y, qrSize, qrSize);
+    pdf.setFontSize(10);
+    pdf.text(data[id].label, x, y + qrSize + 5);
+
+    if (col === 0) {
+      x += colWidth + gap;
+      col = 1;
+    } else {
+      x = gap;
+      col = 0;
+      y += qrSize + 15; // passer à la ligne suivante
+      if (y + qrSize + 15 > pageHeight - gap) {
+        pdf.addPage();
+        y = gap;
+      }
+    }
+  }
+
+  pdf.save("QR_Codes_Machines.pdf");
 });
 </script>
 
