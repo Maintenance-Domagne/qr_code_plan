@@ -9,6 +9,7 @@ body {
     font-family: Arial, sans-serif; 
     padding: 20px; 
     background-color: #f5f5f5;
+    margin: 0;
 }
 h1 { 
     text-align: center; 
@@ -103,286 +104,270 @@ button:hover { background-color: #2980b9; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-// === Données complètes ===
-const machinesData = {
-    "depalettiseur": {
-        "label": "1- Dépalettiseur",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"
-        }]
+// === Données des machines ===
+const machinesData = [
+    {
+        id: "depalettiseur",
+        label: "1- Dépalettiseur",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf" }
+        ]
     },
-    "decaisseuse": {
-        "label": "2- Décaisseuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/2- Décaisseuse/Schéma_électrique/Schéma électrique décaisseuse.pdf"
-        }]
+    {
+        id: "decaisseuse",
+        label: "2- Décaisseuse",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/2- Décaisseuse/Schéma_électrique/Schéma électrique décaisseuse.pdf" }
+        ]
     },
-    "laveuse": {
-        "label": "4- Laveuse",
-        "Schéma_électrique_p1_69": [{
-            "name": "Schéma électrique page 1 à 69",
-            "file": "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf"
-        }],
-        "Schéma_électrique_p70_140": [{
-            "name": "Schéma électrique page 70 à 140",
-            "file": "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf"
-        }]
+    {
+        id: "laveuse",
+        label: "4- Laveuse",
+        files: [
+            { name: "Schéma électrique page 1 à 69", file: "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 1-69.pdf" },
+            { name: "Schéma électrique page 70 à 140", file: "Embouteillage_ligne_A/4- Laveuse/Schéma_électrique/Schéma électrique page 70-140.pdf" }
+        ]
     },
-    "rinçeuse": {
-        "label": "6- Rinçeuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/6- Rinçeuse/Schéma_électrique/Plan élec Rinceuse 2015pdf.pdf"
-        }]
+    {
+        id: "rinçeuse",
+        label: "6- Rinçeuse",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/6- Rinçeuse/Schéma_électrique/Plan élec Rinceuse 2015pdf.pdf" }
+        ]
     },
-    "soutireuse": {
-        "label": "7- Soutireuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/7- Soutireuse/Schéma_électrique/Schéma électrique soutireuse.pdf"
-        }]
+    {
+        id: "soutireuse",
+        label: "7- Soutireuse",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/7- Soutireuse/Schéma_électrique/Schéma électrique soutireuse.pdf" }
+        ]
     },
-    "boucheuse": {
-        "label": "9- Boucheuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique boucheuse",
-            "file": "Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique boucheuse.pdf"
-        }]
+    {
+        id: "boucheuse",
+        label: "9- Boucheuse",
+        files: [
+            { name: "Schéma électrique boucheuse", file: "Embouteillage_ligne_A/9- Boucheuse/Schéma_électrique/Schéma électrique boucheuse.pdf" }
+        ]
     },
-    "visseuse_alu": {
-        "label": "10- Visseuse alu",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"
-        }]
+    {
+        id: "visseuse_alu",
+        label: "10- Visseuse alu",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf" }
+        ]
     },
-    "museleuse": {
-        "label": "11- Museleuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/11- Museleuse/Schéma_électrique/Schéma électrique museleuse.pdf"
-        }]
+    {
+        id: "museleuse",
+        label: "11- Museleuse",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/11- Museleuse/Schéma_électrique/Schéma électrique museleuse.pdf" }
+        ]
     },
-    "encaisseuse": {
-        "label": "16- Encaisseuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/16- Encaisseuse/Schéma_électrique/ECLOR_ENCAISSEUSE BOUTEILLES_IND01.pdf"
-        }]
+    {
+        id: "encaisseuse",
+        label: "16- Encaisseuse",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/16- Encaisseuse/Schéma_électrique/ECLOR_ENCAISSEUSE BOUTEILLES_IND01.pdf" }
+        ]
     },
-    "encartonneuse": {
-        "label": "19- Encartonneuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/19- Encartonneuse/Schéma_électrique/Schéma électrique OCME.pdf"
-        }]
+    {
+        id: "encartonneuse",
+        label: "19- Encartonneuse",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/19- Encartonneuse/Schéma_électrique/Schéma électrique OCME.pdf" }
+        ]
     },
-    "palettiseur": {
-        "label": "21- Palettiseur",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf"
-        }]
+    {
+        id: "palettiseur",
+        label: "21- Palettiseur",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/21- Palettiseur/Schéma_électrique/Schéma élec.pdf" }
+        ]
     },
-    "filmeuse": {
-        "label": "22- Filmeuse",
-        "Schéma_électrique": [{
-            "name": "Schéma électrique",
-            "file": "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"
-        }]
+    {
+        id: "filmeuse",
+        label: "22- Filmeuse",
+        files: [
+            { name: "Schéma électrique", file: "Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf" }
+        ]
     }
-};
+];
 
-// === Fonction pour générer le QR code et retourner directement l'image ===
-function generateQRCodeImage(text) {
-    return new Promise((resolve) => {
-        // Créer un canvas directement
-        const canvas = document.createElement('canvas');
-        canvas.width = 128;
-        canvas.height = 128;
-        
-        // Générer le QR code directement sur le canvas
-        QRCode.toCanvas(canvas, text, {
-            width: 128,
-            margin: 1,
-            color: {
-                dark: '#000000',
-                light: '#FFFFFF'
-            }
-        }, function(error) {
-            if (error) {
-                console.error('Erreur QR code:', error);
-                // Créer un QR code de secours simple
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, 0, 128, 128);
-                ctx.fillStyle = '#000000';
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('QR Code', 64, 64);
-                ctx.fillText('Erreur', 64, 80);
-            }
-            
-            // Convertir en URL data
-            const imgData = canvas.toDataURL('image/png');
-            resolve(imgData);
-        });
-    });
-}
-
-// === Affichage HTML ===
-function displayMachines() {
-    const container = document.getElementById("container");
-    container.innerHTML = "";
+// === Fonction pour créer une carte machine ===
+function createMachineCard(machine) {
+    const card = document.createElement("div");
+    card.className = "machine";
     
-    Object.keys(machinesData).forEach(id => {
-        const machine = machinesData[id];
-        const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
-        
-        const machineDiv = document.createElement("div");
-        machineDiv.className = "machine";
-        
-        // Titre de la machine
-        const title = document.createElement("h2");
-        title.textContent = machine.label;
-        machineDiv.appendChild(title);
-        
-        // Conteneur pour le QR code
-        const qrContainer = document.createElement("div");
-        qrContainer.className = "qr-container";
-        machineDiv.appendChild(qrContainer);
-        
-        // Générer le QR code pour l'affichage web
-        new QRCode(qrContainer, {
-            text: machineURL,
-            width: 128,
-            height: 128,
-            correctLevel: QRCode.CorrectLevel.M
-        });
-        
-        // Liste des fichiers
+    // Titre
+    const title = document.createElement("h2");
+    title.textContent = machine.label;
+    card.appendChild(title);
+    
+    // QR Code
+    const qrContainer = document.createElement("div");
+    qrContainer.className = "qr-container";
+    card.appendChild(qrContainer);
+    
+    const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${machine.id}`;
+    new QRCode(qrContainer, {
+        text: machineURL,
+        width: 128,
+        height: 128
+    });
+    
+    // Liste des fichiers
+    if (machine.files && machine.files.length > 0) {
         const filesList = document.createElement("ul");
         filesList.className = "files-list";
         
-        Object.keys(machine).forEach(key => {
-            if (key !== "label") {
-                machine[key].forEach(item => {
-                    const listItem = document.createElement("li");
-                    const link = document.createElement("a");
-                    link.href = item.file;
-                    link.target = "_blank";
-                    link.textContent = item.name;
-                    listItem.appendChild(link);
-                    filesList.appendChild(listItem);
-                });
-            }
+        machine.files.forEach(file => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = file.file;
+            a.target = "_blank";
+            a.textContent = file.name;
+            li.appendChild(a);
+            filesList.appendChild(li);
         });
         
-        machineDiv.appendChild(filesList);
-        container.appendChild(machineDiv);
+        card.appendChild(filesList);
+    }
+    
+    return card;
+}
+
+// === Afficher toutes les machines ===
+function displayAllMachines() {
+    const container = document.getElementById("container");
+    container.innerHTML = "";
+    
+    machinesData.forEach(machine => {
+        const card = createMachineCard(machine);
+        container.appendChild(card);
     });
 }
 
-// === Fonction pour exporter en PDF ===
+// === Fonction pour générer un QR code et retourner l'image ===
+function generateQRCodeImage(text) {
+    return new Promise((resolve) => {
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.left = "-9999px";
+        document.body.appendChild(tempDiv);
+        
+        const qr = new QRCode(tempDiv, {
+            text: text,
+            width: 128,
+            height: 128
+        });
+        
+        setTimeout(() => {
+            const canvas = tempDiv.querySelector("canvas");
+            if (canvas) {
+                const imgData = canvas.toDataURL("image/png");
+                resolve(imgData);
+            } else {
+                // Fallback si pas de canvas
+                const fallbackCanvas = document.createElement("canvas");
+                fallbackCanvas.width = 128;
+                fallbackCanvas.height = 128;
+                const ctx = fallbackCanvas.getContext("2d");
+                ctx.fillStyle = "#f0f0f0";
+                ctx.fillRect(0, 0, 128, 128);
+                ctx.fillStyle = "#000";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("QR Code", 64, 60);
+                ctx.fillText(text.substring(0, 20), 64, 80);
+                resolve(fallbackCanvas.toDataURL("image/png"));
+            }
+            
+            document.body.removeChild(tempDiv);
+        }, 100);
+    });
+}
+
+// === Exporter en PDF ===
 async function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
     
-    // Configuration de la page
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     
     const margin = 10;
-    const colWidth = (pageWidth - (margin * 3)) / 2;
-    const rowHeight = 60; // 3 lignes par page
+    const colWidth = (pageWidth - margin * 3) / 2;
+    const rowHeight = 60;
     const qrSize = 40;
     
-    let currentPage = 0;
     let x = margin;
     let y = margin;
+    let col = 0;
     
-    const machineIds = Object.keys(machinesData);
-    
-    for (let i = 0; i < machineIds.length; i++) {
-        const id = machineIds[i];
-        const machine = machinesData[id];
-        const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
+    for (let i = 0; i < machinesData.length; i++) {
+        const machine = machinesData[i];
+        const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${machine.id}`;
         
-        // Générer l'image du QR code
+        // Générer image QR code
         const qrImage = await generateQRCodeImage(machineURL);
         
-        // Vérifier si on a besoin d'une nouvelle page
-        if (i > 0 && i % 6 === 0) {
-            pdf.addPage();
-            currentPage++;
-            x = margin;
-            y = margin;
-        } else if (i % 2 === 0 && i % 6 !== 0) {
-            // Nouvelle ligne, mais même page
-            x = margin;
-            y += rowHeight;
-        } else if (i % 2 !== 0) {
-            // Deuxième colonne de la même ligne
-            x = margin + colWidth + margin;
-        }
-        
-        // Titre de la machine
+        // Titre
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(10);
         pdf.setTextColor(40, 120, 185);
-        
-        // Ajuster le titre si trop long
-        const title = machine.label;
-        const titleLines = pdf.splitTextToSize(title, colWidth - 5);
-        pdf.text(titleLines, x, y);
+        pdf.text(machine.label, x, y, { maxWidth: colWidth - 5 });
         
         // QR Code
         try {
             pdf.addImage(qrImage, "PNG", x, y + 5, qrSize, qrSize);
-        } catch (error) {
-            console.error("Erreur d'ajout d'image:", error);
-            // Dessiner un rectangle de secours
-            pdf.setFillColor(240, 240, 240);
-            pdf.rect(x, y + 5, qrSize, qrSize, 'F');
-            pdf.setTextColor(150, 150, 150);
-            pdf.setFontSize(8);
-            pdf.text("QR Code", x + qrSize/2, y + 5 + qrSize/2, { align: "center" });
+        } catch (e) {
+            console.error("Erreur image:", e);
         }
         
-        // Liste des fichiers
-        let fileY = y + qrSize + 8;
+        // Fichiers
+        let fileY = y + qrSize + 10;
         pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(7);
+        pdf.setFontSize(8);
         pdf.setTextColor(0, 0, 0);
         
-        Object.keys(machine).forEach(key => {
-            if (key !== "label") {
-                machine[key].forEach(item => {
-                    // Tronquer le nom du fichier si trop long
-                    const fileName = item.name.length > 40 ? item.name.substring(0, 37) + "..." : item.name;
-                    pdf.text(fileName, x, fileY, { maxWidth: colWidth - 5 });
-                    fileY += 3.5;
-                });
-            }
+        machine.files.forEach(file => {
+            const fileName = file.name.length > 35 ? file.name.substring(0, 32) + "..." : file.name;
+            pdf.text(fileName, x, fileY, { maxWidth: colWidth - 5 });
+            fileY += 4;
         });
+        
+        // Passer à la position suivante
+        col++;
+        if (col === 2) {
+            col = 0;
+            x = margin;
+            y += rowHeight;
+        } else {
+            x = margin + colWidth + margin;
+        }
+        
+        // Nouvelle page si nécessaire (3 lignes par page)
+        if (y + rowHeight > pageHeight - margin && i < machinesData.length - 1) {
+            pdf.addPage();
+            x = margin;
+            y = margin;
+            col = 0;
+        }
     }
     
-    // Sauvegarder le PDF
-    pdf.save("QR_Codes_Machines_Ligne_A.pdf");
+    pdf.save("QR_Codes_Machines.pdf");
 }
 
 // === Initialisation ===
 document.addEventListener("DOMContentLoaded", () => {
-    displayMachines();
+    displayAllMachines();
     
     document.getElementById("exportPDF").addEventListener("click", async () => {
         const button = document.getElementById("exportPDF");
         const originalText = button.textContent;
         
         try {
-            button.textContent = "⏳ Génération en cours...";
+            button.textContent = "⏳ Génération...";
             button.disabled = true;
             
             await exportToPDF();
@@ -393,9 +378,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.disabled = false;
             }, 2000);
         } catch (error) {
-            console.error("Erreur lors de la génération du PDF:", error);
-            alert("Erreur lors de la génération du PDF. Veuillez vérifier la console pour plus de détails.");
-            button.textContent = "❌ Erreur!";
+            console.error("Erreur:", error);
+            button.textContent = "❌ Erreur";
             setTimeout(() => {
                 button.textContent = originalText;
                 button.disabled = false;
