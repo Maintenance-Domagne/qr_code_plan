@@ -7,16 +7,14 @@
 <style>
 body { font-family: Arial, sans-serif; padding: 20px; }
 h1 { text-align: center; margin-bottom: 20px; }
-.page { display: flex; flex-wrap: wrap; justify-content: space-between; page-break-after: always; }
-.machine { width: 48%; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
-.machine h2 { font-size: 16px; margin: 0 0 10px 0; text-align: center; }
-.qr { width: 128px; height: 128px; margin-bottom: 10px; }
-ul { list-style: none; padding-left: 0; text-align: center; margin: 0; }
-li { margin: 4px 0; font-size: 12px; }
+.machine { border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; width: 48%; box-sizing: border-box; float: left; margin-right: 2%; }
+.machine:nth-child(2n) { margin-right: 0; }
+.machine h2 { font-size: 16px; text-align: center; margin-bottom: 10px; }
+ul { list-style: none; padding-left: 0; margin:0; font-size: 12px; text-align: center; }
+li { margin: 4px 0; }
 a { text-decoration: none; color: #2980b9; }
 a:hover { text-decoration: underline; }
 button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
-@media print { button { display: none; } }
 </style>
 </head>
 <body>
@@ -26,7 +24,6 @@ button { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; cursor: point
 <div id="container"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
@@ -46,19 +43,13 @@ const data = {
   "filmeuse": {"label":"22- Filmeuse","Schéma_électrique":[{"name":"Schéma électrique","file":"Embouteillage_ligne_A/22- Filmeuse/Schéma_électrique/Schéma électrique filmeuse.pdf"}]}
 };
 
-// === Affichage des machines ===
+// === Affichage HTML ===
 const container = document.getElementById("container");
 container.innerHTML = "";
-let pageDiv = document.createElement("div");
-pageDiv.className = "page";
-container.appendChild(pageDiv);
-let count = 0;
-
 for (const id in data) {
   const machine = data[id];
   const div = document.createElement("div");
   div.className = "machine";
-
   const h2 = document.createElement("h2");
   h2.textContent = machine.label;
   div.appendChild(h2);
@@ -80,29 +71,55 @@ for (const id in data) {
     });
     div.appendChild(ul);
   }
-
-  pageDiv.appendChild(div);
-  count++;
-  if (count % 6 === 0) { // nouvelle page
-    pageDiv = document.createElement("div");
-    pageDiv.className = "page";
-    container.appendChild(pageDiv);
-  }
+  container.appendChild(div);
 }
 
-// === Export PDF ===
-document.getElementById("exportPDF").addEventListener("click", () => {
-  html2canvas(container, { scale: 2 }).then(canvas => {
-    const imgData = canvas.toDataURL("image/png");
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
-    pdf.save("QR_Codes_Machines.pdf");
-  });
+// === Export PDF avec jsPDF 2 colonnes × 3 lignes ===
+document.getElementById("exportPDF").addEventListener("click", async () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const colWidth = pageWidth / 2 - 15; // 2 colonnes
+  const rowHeight = 60; // 3 lignes par page -> 60mm
+  let x = 10;
+  let y = 10;
+  let col = 0;
+  let row = 0;
+
+  for (const id in data) {
+    const machine = data[id];
+    const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
+
+    // Canvas temporaire QR code
+    const tempDiv = document.createElement("div");
+    const qr = new QRCode(tempDiv, { text: machineURL, width: 128, height: 128 });
+    await new Promise(res => setTimeout(res, 50)); // attendre QR code
+    const qrCanvas = tempDiv.querySelector("canvas");
+    const imgData = qrCanvas.toDataURL("image/png");
+
+    pdf.setFontSize(12);
+    pdf.text(machine.label, x, y + 5);
+    pdf.addImage(imgData, "PNG", x, y + 8, 40, 40);
+
+    // Liste des fichiers
+    let listY = y + 50;
+    for (const folder in machine) {
+      if (folder === "label") continue;
+      machine[folder].forEach(item => {
+        pdf.setFontSize(8);
+        pdf.text(item.name, x, listY, { maxWidth: colWidth });
+        listY += 4;
+      });
+    }
+
+    col++;
+    if (col >= 2) { col = 0; x = 10; row++; } else { x = pageWidth / 2 + 5; }
+    if (row >= 3) { pdf.addPage(); x = 10; y = 10; col = 0; row = 0; } else { y += rowHeight; }
+  }
+
+  pdf.save("QR_Codes_Machines.pdf");
 });
 </script>
 
