@@ -19,6 +19,12 @@
         "name": "Fichier de réglages",
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"
       }
+    ],
+    "Alimentation_machine": [
+      {
+        "name": "Emplacement de l'alimentation externe de la machine",
+        "file": ""
+      }
     ]
   },
   "visseuse_alu": {
