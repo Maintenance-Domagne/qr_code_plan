@@ -19,12 +19,6 @@
         "name": "Fichier de réglages",
         "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"
       }
-    ],
-    "Alimentation_machine": [
-      {
-        "name": "Emplacement de l'alimentation externe de la machine",
-        "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"
-      }
     ]
   },
   "visseuse_alu": {
@@ -33,6 +27,12 @@
       {
         "name": "Schéma électrique",
         "file": "Embouteillage_ligne_A/10- Visseuse alu/Schéma_électrique/Schéma électrique Visseuse alu.pdf"
+      }
+    ],
+    "Alimentation_machine": [
+      {
+        "name": "Emplacement de l'alimentation externe de la machine",
+        "file": "Embouteillage_ligne_A/1- Dépalettiseur/Fichier_réglages/Q_C22077ABE.pdf"
       }
     ]
   },
@@ -157,6 +157,7 @@
     ]
   }
 }
+
 
 
 
