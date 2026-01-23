@@ -14,7 +14,6 @@
   --text-dark: #2c3e50;
 }
 
-/* IMAGE DE FOND */
 body {
   margin: 0;
   font-family: "Inter", Arial, sans-serif;
@@ -31,30 +30,29 @@ body {
 }
 
 .main {
-  position: relative;                /* nécessaire pour placer l'image derrière */
+  position: relative;               
   max-width: 900px;
   width: 100%;
   border-radius: 14px;
   padding: 30px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-  background-color: rgba(255,255,255,0.85); /* fond semi-transparent pour lisibilité */
-  overflow: hidden;                   /* pour que l'image ne dépasse pas */
+  background-color: rgba(255,255,255,0.85); 
+  overflow: hidden;                  
 }
 
-/* Image en arrière-plan */
 .main::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url("Loic_Raison_Degustation_Noir_sans_fond.png"); /* ton image */
+  background-image: url("Loic_Raison_Degustation_Noir_sans_fond.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.15; /* opacité pour que le texte reste lisible */
+  opacity: 0.15; 
   z-index: 0;
 }
 
-/* Le contenu reste au-dessus */
+
 .main > * {
   position: relative;
   z-index: 1;
