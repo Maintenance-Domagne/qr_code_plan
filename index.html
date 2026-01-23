@@ -185,19 +185,26 @@ fetch("./data.json")
 // ===== POPUP BOURDON =====
 const bee = document.getElementById('bee');
 const main = document.querySelector('.main');
-const egg = document.getElementById('easterEgg');
-const closeEgg = document.getElementById('closeEgg');
 
 function moveBee(){
   const rect = main.getBoundingClientRect();
   const x = Math.random() * (rect.width - 50);
   const y = Math.random() * (rect.height - 50);
+  // On ajoute "position relative à main" pour transform
   bee.style.transform = `translate(${x}px, ${y}px)`;
 }
+
+// Déplacer au départ pour qu'on le voie
+moveBee();
+
+// Bouger toutes les 2 secondes
 setInterval(moveBee, 2000);
 
-bee.addEventListener('click', ()=>{ egg.style.display = 'block'; });
-closeEgg.addEventListener('click', ()=>{ egg.style.display = 'none'; });
+// Popup au clic
+const egg = document.getElementById('easterEgg');
+const closeEgg = document.getElementById('closeEgg');
+bee.addEventListener('click', () => egg.style.display = 'block');
+closeEgg.addEventListener('click', () => egg.style.display = 'none');
 </script>
 </body>
 </html>
