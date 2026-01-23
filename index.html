@@ -9,27 +9,22 @@
 
 <style>
 :root {
-  --bg: #fefefe;
-  --text: #2c3e50;
+  --bg-dark: rgba(0,0,0,0.65);
   --card-bg: rgba(255,255,255,0.95);
   --accent: #1abc9c;
-}
-
-body.dark {
-  --bg: #1c1c1c;
-  --text: #ecf0f1;
-  --card-bg: rgba(44,44,44,0.95);
-  --accent: #1abc9c;
+  --text-dark: #2c3e50;
 }
 
 body {
   margin: 0;
   font-family: "Inter", Arial, sans-serif;
-  background: var(--bg) url("/Loic_Raison_Degustation_Noir_sans_fond.png") no-repeat center center fixed;
+  background: url("/Loic_Raison_Degustation_Noir_sans_fond.png") no-repeat center center fixed;
   background-size: cover;
-  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
-  transition: background 0.3s, color 0.3s;
 }
 
 .main {
@@ -39,7 +34,6 @@ body {
   border-radius: 14px;
   padding: 30px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-  transition: background 0.3s, color 0.3s;
 }
 
 header {
@@ -50,43 +44,46 @@ header {
   gap: 20px;
 }
 
-h1 { margin:0; font-size:1.8rem; color: var(--text); }
-
-.machine-label { font-weight:600; color: var(--accent); }
-
-#themeToggle {
-  padding:8px 12px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:600;
-  background: var(--accent);
-  color:white;
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--text-dark);
 }
 
-.qr { background:white; padding:10px; border-radius:10px; }
+.machine-label {
+  font-weight: 600;
+  color: var(--accent);
+}
 
-section { margin-top:30px; }
+.qr {
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+section {
+  margin-top: 30px;
+}
 
 h3 {
-  margin-bottom:10px;
-  color: var(--text);
+  margin-bottom: 10px;
+  color: var(--text-dark);
   border-left: 4px solid var(--accent);
-  padding-left:10px;
+  padding-left: 10px;
 }
 
 ul {
   list-style: none;
-  padding:0;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap:12px;
+  gap: 12px;
 }
 
 li {
-  background:#f4f6f7;
-  padding:14px 16px;
-  border-radius:10px;
+  background: #f4f6f7;
+  padding: 14px 16px;
+  border-radius: 10px;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -96,43 +93,24 @@ li:hover {
 }
 
 a {
-  text-decoration:none;
-  color: var(--text);
-  font-weight:500;
-  display:flex;
-  align-items:center;
-  gap:8px;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.tags { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
-
-.tag {
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:0.75rem;
-  font-weight:600;
-  color:white;
+a::before {
+  content: "📄";
 }
 
-/* Couleurs tags */
-.tag.procedure { background:#2ecc71; }
-.tag.securite  { background:#e74c3c; }
-.tag.qualite   { background:#3498db; }
-.tag.maintenance { background:#f39c12; }
-.tag.pdf { background:#7f8c8d; }
-.tag.video { background:#9b59b6; }
-.tag.image { background:#1abc9c; }
-
-/* Mode sombre tag override */
-body.dark .tag.procedure { background:#27ae60; }
-body.dark .tag.securite  { background:#c0392b; }
-body.dark .tag.qualite   { background:#2980b9; }
-body.dark .tag.maintenance { background:#d35400; }
-body.dark .tag.pdf { background:#95a5a6; }
-body.dark .tag.video { background:#8e44ad; }
-body.dark .tag.image { background:#16a085; }
-
-footer { margin-top:30px; text-align:center; font-size:0.85rem; color:#7f8c8d; }
+footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
 </style>
 </head>
 
@@ -147,8 +125,6 @@ footer { margin-top:30px; text-align:center; font-size:0.85rem; color:#7f8c8d; }
     <div class="qr" id="qr"></div>
   </header>
 
-  <button id="themeToggle">🌙 Mode sombre</button>
-
   <div id="content">Chargement…</div>
 
   <footer>
@@ -162,24 +138,10 @@ footer { margin-top:30px; text-align:center; font-size:0.85rem; color:#7f8c8d; }
 const content = document.getElementById("content");
 const machineLabel = document.getElementById("machineLabel");
 const qrDiv = document.getElementById("qr");
-const toggle = document.getElementById("themeToggle");
 
 const params = new URLSearchParams(window.location.search);
 const machineId = params.get("machine");
 
-// Mode sombre toggle
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-  toggle.textContent = "☀️ Mode clair";
-}
-toggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-  toggle.textContent = isDark ? "☀️ Mode clair" : "🌙 Mode sombre";
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-});
-
-// Charger data.json
 fetch("./data.json")
   .then(res => res.json())
   .then(data => {
@@ -193,8 +155,8 @@ fetch("./data.json")
 
     new QRCode(qrDiv, {
       text: window.location.href,
-      width:120,
-      height:120
+      width: 120,
+      height: 120
     });
 
     content.innerHTML = "";
@@ -208,15 +170,7 @@ fetch("./data.json")
 
       machine[folder].forEach(item => {
         const li = document.createElement("li");
-
-        let tagsHTML = "";
-        if (item.tags) {
-          tagsHTML = `<div class="tags">` +
-            item.tags.map(t => `<span class="tag ${t.replace("é","e")}">${t.toUpperCase()}</span>`).join("") +
-            `</div>`;
-        }
-
-        li.innerHTML = `<a href="${item.file}" target="_blank">${item.name}</a>${tagsHTML}`;
+        li.innerHTML = `<a href="${item.file}" target="_blank">${item.name}</a>`;
         ul.appendChild(li);
       });
 
