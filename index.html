@@ -18,8 +18,14 @@
 body {
   margin: 0;
   font-family: "Inter", Arial, sans-serif;
-  background: url("/Loic_Raison_Degustation_Noir_sans_fond.png") no-repeat center center fixed;
-  background-size: cover;
+
+  /* IMAGE DE FOND */
+  background-image: url("/Loic_Raison_Degustation_Noir_sans_fond.png"); /* chemin de ton image */
+  background-repeat: no-repeat;       /* ne pas répéter l'image */
+  background-position: center;        /* centrer l'image */
+  background-size: cover;             /* couvrir tout l'écran */
+  background-attachment: fixed;       /* fixe l'image même si on scroll */
+  
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -27,14 +33,16 @@ body {
   padding: 20px;
 }
 
+/* Overlay pour lisibilité */
 .main {
-  background: var(--card-bg);
+  background: rgba(255,255,255,0.9); /* blanc semi-transparent */
   max-width: 900px;
   width: 100%;
   border-radius: 14px;
   padding: 30px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.35);
 }
+</style>
 
 header {
   display: flex;
