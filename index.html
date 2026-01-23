@@ -102,13 +102,15 @@ footer {
 /* BOURDON */
 #bee {
   position: absolute;
-  width:50px;
-  height:50px;
-  background-image:url('https://em-content.zobj.net/source/animated-noto-color-emoji/354/bee_1f41d.gif');
+  top: 0;   /* position initiale visible */
+  left: 0;
+  width: 50px;
+  height: 50px;
+  background-image: url('https://em-content.zobj.net/source/animated-noto-color-emoji/354/bee_1f41d.gif');
   background-size: contain;
-  background-repeat:no-repeat;
-  cursor:pointer;
-  z-index:0;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  z-index: 2; /* au-dessus du fond mais derrière le contenu si besoin */
 }
 </style>
 </head>
