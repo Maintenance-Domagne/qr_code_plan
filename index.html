@@ -101,7 +101,7 @@ footer {
 
 /* BOURDON */
 #bee {
-  position: absolute;   /* position relative à .main */
+  position: absolute;  
   top: 0;
   left: 0;
   width: 50px;
@@ -110,7 +110,7 @@ footer {
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
-  z-index: 2;           /* au-dessus du fond mais derrière le contenu */
+  z-index: 2; 
 }
 </style>
 </head>
@@ -182,32 +182,49 @@ fetch("./data.json")
   })
   .catch(err => { content.innerHTML = "<p>❌ Erreur de chargement</p>"; console.error(err); });
 
-// ===== POPUP BOURDON =====
+// ===== POPUP BOURDON + VOL FLUIDE =====
 const bee = document.getElementById('bee');
 const main = document.querySelector('.main');
-
-function moveBee(){
-  const rect = main.getBoundingClientRect();
-  const x = Math.random() * (rect.width - 50);
-  const y = Math.random() * (rect.height - 50);
-  bee.style.transform = `translate(${x}px, ${y}px)`;
-}
-
-// Déplacement initial
-moveBee();
-
-// Déplacer toutes les 2 secondes
-setInterval(moveBee, 2000);
-
-// Popup au clic
 const egg = document.getElementById('easterEgg');
 const closeEgg = document.getElementById('closeEgg');
+
+let beeX = 0;
+let beeY = 0;
+let targetX = 0;
+let targetY = 0;
+const beeSpeed = 0.05; // vitesse fluide
+
+function pickTarget() {
+  const rect = main.getBoundingClientRect();
+  targetX = Math.random() * (rect.width - 50);
+  targetY = Math.random() * (rect.height - 50);
+}
+
+function animateBee() {
+  beeX += (targetX - beeX) * beeSpeed;
+  beeY += (targetY - beeY) * beeSpeed;
+
+  const oscillation = Math.sin(Date.now() / 200) * 5;
+
+  bee.style.transform = `translate(${beeX}px, ${beeY + oscillation}px) rotate(${(targetX - beeX) * 0.5}deg)`;
+
+  if (Math.abs(targetX - beeX) < 1 && Math.abs(targetY - beeY) < 1) {
+    pickTarget();
+  }
+
+  requestAnimationFrame(animateBee);
+}
+
+// Initialisation
+pickTarget();
+animateBee();
+
+// Popup au clic
 bee.addEventListener('click', () => egg.style.display = 'block');
 closeEgg.addEventListener('click', () => egg.style.display = 'none');
 </script>
 </body>
 </html>
-
 
 
 
