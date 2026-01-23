@@ -102,15 +102,15 @@ footer {
 /* BOURDON */
 #bee {
   position: absolute;  
-  top: 0;
-  left: 0;
+  top: 10px;   /* visible dès le départ */
+  left: 10px;
   width: 50px;
   height: 50px;
   background-image: url('https://em-content.zobj.net/source/animated-noto-color-emoji/354/bee_1f41d.gif');
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
-  z-index: 2; 
+  z-index: 10;  /* AU-DESSUS de tout le contenu de fond */
 }
 </style>
 </head>
@@ -185,14 +185,10 @@ fetch("./data.json")
 // ===== POPUP BOURDON + VOL FLUIDE =====
 const bee = document.getElementById('bee');
 const main = document.querySelector('.main');
-const egg = document.getElementById('easterEgg');
-const closeEgg = document.getElementById('closeEgg');
 
-let beeX = 0;
-let beeY = 0;
-let targetX = 0;
-let targetY = 0;
-const beeSpeed = 0.05; // vitesse fluide
+let beeX = 10, beeY = 10; // correspond à top/left initiaux
+let targetX = 0, targetY = 0;
+const beeSpeed = 0.05;
 
 function pickTarget() {
   const rect = main.getBoundingClientRect();
@@ -220,6 +216,8 @@ pickTarget();
 animateBee();
 
 // Popup au clic
+const egg = document.getElementById('easterEgg');
+const closeEgg = document.getElementById('closeEgg');
 bee.addEventListener('click', () => egg.style.display = 'block');
 closeEgg.addEventListener('click', () => egg.style.display = 'none');
 </script>
