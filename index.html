@@ -102,10 +102,11 @@ footer {
 /* BOURDON */
 #bee {
   position: absolute;  
-  top: 10px;   /* visible dès le départ */
+  top: 10px;
   left: 10px;
   width: 50px;
   height: 50px;
+  display: block;                 /* <-- essentiel */
   background-image: url('https://em-content.zobj.net/source/animated-noto-color-emoji/354/bee_1f41d.gif');
   background-size: contain;
   background-repeat: no-repeat;
@@ -186,7 +187,7 @@ fetch("./data.json")
 const bee = document.getElementById('bee');
 const main = document.querySelector('.main');
 
-let beeX = 10, beeY = 10; // correspond à top/left initiaux
+let beeX = 10, beeY = 10; 
 let targetX = 0, targetY = 0;
 const beeSpeed = 0.05;
 
@@ -211,11 +212,9 @@ function animateBee() {
   requestAnimationFrame(animateBee);
 }
 
-// Initialisation
 pickTarget();
 animateBee();
 
-// Popup au clic
 const egg = document.getElementById('easterEgg');
 const closeEgg = document.getElementById('closeEgg');
 bee.addEventListener('click', () => egg.style.display = 'block');
