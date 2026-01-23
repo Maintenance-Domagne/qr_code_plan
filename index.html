@@ -101,8 +101,8 @@ footer {
 
 /* BOURDON */
 #bee {
-  position: absolute;
-  top: 0;   /* position initiale visible */
+  position: absolute;   /* position relative à .main */
+  top: 0;
   left: 0;
   width: 50px;
   height: 50px;
@@ -110,7 +110,7 @@ footer {
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
-  z-index: 2; /* au-dessus du fond mais derrière le contenu si besoin */
+  z-index: 2;           /* au-dessus du fond mais derrière le contenu */
 }
 </style>
 </head>
@@ -130,10 +130,10 @@ footer {
   <footer>
     Accès documents – Embouteillage Ligne A
   </footer>
-</div>
 
-<!-- Bourdon -->
-<div id="bee"></div>
+  <!-- Bourdon placé DANS .main -->
+  <div id="bee"></div>
+</div>
 
 <!-- Popup Easter Egg -->
 <div id="easterEgg" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -190,14 +190,13 @@ function moveBee(){
   const rect = main.getBoundingClientRect();
   const x = Math.random() * (rect.width - 50);
   const y = Math.random() * (rect.height - 50);
-  // On ajoute "position relative à main" pour transform
   bee.style.transform = `translate(${x}px, ${y}px)`;
 }
 
-// Déplacer au départ pour qu'on le voie
+// Déplacement initial
 moveBee();
 
-// Bouger toutes les 2 secondes
+// Déplacer toutes les 2 secondes
 setInterval(moveBee, 2000);
 
 // Popup au clic
