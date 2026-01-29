@@ -276,7 +276,7 @@ function displayMachines() {
 // === Fonction pour exporter en PDF ===
 async function exportToPDF() {
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a6");
+    const pdf = new jsPDF("p", "mm", "a4");
 
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -292,7 +292,7 @@ async function exportToPDF() {
     const machineIds = Object.keys(machinesData);
 
     for (let i = 0; i < machineIds.length; i++) {
-        if (index > 0 && index % 4 === 0) {
+        if (index > 0 && index % 6 === 0) {
             pdf.addPage();
             index = 0;
         }
