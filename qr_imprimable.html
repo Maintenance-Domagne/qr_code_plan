@@ -286,13 +286,13 @@ async function exportToPDF() {
     const cardHeight = (pageHeight - margin * 3) / 2;
 
     const titleHeight = 12;
-    const qrSize = 40;
+    const qrSize = 60;
 
     let index = 0;
     const machineIds = Object.keys(machinesData);
 
     for (let i = 0; i < machineIds.length; i++) {
-        if (index > 0 && index % 6 === 0) {
+        if (index > 0 && index % 4 === 0) {
             pdf.addPage();
             index = 0;
         }
@@ -319,7 +319,7 @@ async function exportToPDF() {
         pdf.rect(x, y, cardWidth, titleHeight);
 
         pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(12);
+        pdf.setFontSize(18);
         pdf.text(
             machine.label.toUpperCase(),
             x + cardWidth / 2,
@@ -342,7 +342,7 @@ async function exportToPDF() {
                 imgData,
                 "PNG",
                 x + (cardWidth - qrSize) / 2,
-                y + titleHeight + 8,
+                y + titleHeight + 12,
                 qrSize,
                 qrSize
             );
@@ -352,7 +352,7 @@ async function exportToPDF() {
 
         // Liste documents
         pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(9);
+        pdf.setFontSize(14);
 
         let textY = y + titleHeight + qrSize + 18;
 
@@ -361,7 +361,7 @@ async function exportToPDF() {
                 machine[key].forEach(item => {
                     const lines = pdf.splitTextToSize(item.name, cardWidth - 10);
                     pdf.text(lines, x + cardWidth / 2, textY, { align: "center" });
-                    textY += lines.length * 4;
+                    textY += lines.length * 6;
                 });
             }
         });
