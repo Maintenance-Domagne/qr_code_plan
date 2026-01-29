@@ -276,7 +276,7 @@ function displayMachines() {
 // === Fonction pour exporter en PDF ===
 async function exportToPDF() {
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
+    const pdf = new jsPDF("p", "mm", "a6");
 
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
