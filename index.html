@@ -2,151 +2,289 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Documents – Ligne A</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<title>Documentation Technique - Ligne A</title>
+
+<link href="httpsr:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: "Inter", Arial, sans-serif;
-  background: #ffffff;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+
+:root{
+    --vert:#00a884;
+    --vert-fonce:#007c65;
+    --texte:#243447;
 }
 
-.main {
-  position: relative;               
-  max-width: 900px;
-  width: 100%;
-  border-radius: 14px;
-  padding: 30px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-  background-color: rgba(255,255,255,0.85); 
-  overflow: hidden;                  
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-.main::before {
-  content: "";
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
-  background-image: url("Loic_Raison_Degustation_Noir_sans_fond.png");
-  background-size: cover;
-  background-position: center;
-  opacity: 0.15;
-  z-index:0;
+body{
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:30px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#009879,#006e58);
 }
 
-.main > * {
-  position: relative;
-  z-index: 1;
+.main{
+    position:relative;
+    width:100%;
+    max-width:1200px;
+    padding:35px;
+    border-radius:24px;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(10px);
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+    overflow:hidden;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+.main::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:url("Loic_Raison_Degustation_Noir_sans_fond.png");
+    background-position:center;
+    background-size:cover;
+    opacity:0.05;
+    pointer-events:none;
 }
 
-h1 { margin: 0; font-size: 1.8rem; color: #2c3e50; cursor: pointer; }
-.machine-label { font-weight: 600; color: #1abc9c; }
-.qr { background: white; padding: 10px; border-radius: 10px; }
-
-section { margin-top: 30px; }
-h3 { margin-bottom: 10px; color: #2c3e50; border-left: 4px solid #1abc9c; padding-left: 10px; }
-
-ul {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px;
+.main > *{
+    position:relative;
+    z-index:2;
 }
 
-li {
-  background: #f4f6f7;
-  padding: 14px 16px;
-  border-radius: 10px;
-  transition: transform 0.2s, box-shadow 0.2s;
+.banner{
+    background:#009879;
+    color:white;
+    text-align:center;
+    padding:12px;
+    border-radius:12px;
+    font-weight:600;
+    margin-bottom:25px;
 }
 
-li:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:20px;
+    padding-bottom:20px;
+    border-bottom:1px solid rgba(0,0,0,.1);
 }
 
-a {
-  text-decoration: none;
-  color: #2c3e50;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+h1{
+    font-size:2rem;
+    color:var(--texte);
 }
 
-a::before { content: "📄"; }
-
-footer {
-  margin-top: 30px;
-  text-align: center;
-  font-size: 0.85rem;
-  color: #7f8c8d;
+.machine-label{
+    margin-top:10px;
+    display:inline-block;
+    padding:8px 15px;
+    border-radius:20px;
+    background:rgba(0,168,132,.15);
+    color:var(--vert);
+    font-weight:600;
 }
 
-/* BOURDON */
-#bee {
-  position: absolute;  
-  top: 10px;
-  left: 10px;
-  width: 50px;
-  height: 50px;
-  display: block;                 /* <-- essentiel */
-  background-image: url('bee-1979_512.gif');
-  background-size: contain;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  z-index: 10;  /* AU-DESSUS de tout le contenu de fond */
+.qr{
+    padding:15px;
+    background:white;
+    border-radius:18px;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
+
+#content{
+    margin-top:30px;
+}
+
+section{
+    margin-top:30px;
+}
+
+h3{
+    margin-bottom:15px;
+    color:var(--texte);
+    font-size:1.15rem;
+}
+
+ul{
+    list-style:none;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:15px;
+}
+
+li{
+    background:white;
+    border-left:4px solid var(--vert);
+    border-radius:14px;
+    overflow:hidden;
+    transition:.3s;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+li:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 25px rgba(0,0,0,.15);
+}
+
+a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:var(--texte);
+    padding:18px;
+    font-weight:500;
+}
+
+a:hover{
+    color:var(--vert);
+}
+
+a::before{
+    content:"📄";
+}
+
+footer{
+    text-align:center;
+    margin-top:35px;
+    padding-top:20px;
+    border-top:1px solid rgba(0,0,0,.08);
+    color:#64748b;
+    font-size:0.9rem;
+}
+
+/* Bourdon */
+
+#bee{
+    position:absolute;
+    width:55px;
+    height:55px;
+    background-image:url('bee-1979_512.gif');
+    background-size:contain;
+    background-repeat:no-repeat;
+    cursor:pointer;
+    z-index:100;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.3));
+}
+
+/* Popup */
+
+#easterEgg{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);
+    z-index:9999;
+    max-width:400px;
+    width:90%;
+}
+
+#closeEgg{
+    margin-top:15px;
+    padding:10px 18px;
+    border:none;
+    border-radius:10px;
+    background:var(--vert);
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+}
+
+#closeEgg:hover{
+    background:var(--vert-fonce);
+}
+
+@media(max-width:768px){
+
+    body{
+        padding:15px;
+    }
+
+    .main{
+        padding:20px;
+    }
+
+    header{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    ul{
+        grid-template-columns:1fr;
+    }
+
+    h1{
+        font-size:1.6rem;
+    }
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="main">
-  <header>
-    <div>
-      <h1>📄 Documentation</h1>
-      <div class="machine-label" id="machineLabel"></div>
+
+    <div class="banner">
+        🏭 EMBOUTEILLAGE LIGNE A • PORTAIL DOCUMENTAIRE
     </div>
-    <div class="qr" id="qr"></div>
-  </header>
 
-  <div id="content">Chargement…</div>
+    <header>
+        <div>
+            <h1>📄 Documentation Technique</h1>
+            <div class="machine-label" id="machineLabel"></div>
+        </div>
 
-  <footer>
-    Accès documents – Embouteillage Ligne A
-  </footer>
+        <div class="qr" id="qr"></div>
+    </header>
 
-  <!-- Bourdon placé DANS .main -->
-  <div id="bee"></div>
+    <div id="content">
+        <p style="text-align:center;padding:30px;color:#666;">
+            ⏳ Chargement de la documentation...
+        </p>
+    </div>
+
+    <footer>
+        Accès Documents • Ligne A • Créé par Christopher OSTER
+    </footer>
+
+    <div id="bee"></div>
+
 </div>
 
-<!-- Popup Easter Egg -->
-<div id="easterEgg" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  background: rgba(255,255,255,0.95); padding:30px 40px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.3);
-  z-index:9999; text-align:center;">
-  Application créer par : Christopher Oster Alias "Le Bourdon"<br><br>
-  <button id="closeEgg" style="padding:8px 12px; border:none; border-radius:8px; background:#1abc9c; color:white; font-weight:600; cursor:pointer;">Fermer</button>
+<div id="easterEgg">
+    <h2>🐝 Le Bourdon</h2>
+
+    <p style="margin-top:15px;">
+        Application créée par<br>
+        <strong>Christopher OSTER</strong><br>
+        Alias <em>"Le Bourdon"</em>
+    </p>
+
+    <button id="closeEgg">Fermer</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script>
-// ===== QR code et documents =====
+
 const content = document.getElementById("content");
 const machineLabel = document.getElementById("machineLabel");
 const qrDiv = document.getElementById("qr");
@@ -155,89 +293,121 @@ const params = new URLSearchParams(window.location.search);
 const machineId = params.get("machine");
 
 fetch("./data.json")
-  .then(res => res.json())
-  .then(data => {
+.then(res => res.json())
+.then(data => {
+
     if (!machineId || !data[machineId]) {
-      content.innerHTML = "<p>❌ Machine inconnue</p>";
-      return;
+        content.innerHTML = "<p>❌ Machine inconnue</p>";
+        return;
     }
+
     const machine = data[machineId];
+
     machineLabel.textContent = machine.label;
 
-    new QRCode(qrDiv, { text: window.location.href, width:120, height:120 });
+    new QRCode(qrDiv,{
+        text:window.location.href,
+        width:120,
+        height:120
+    });
 
     content.innerHTML = "";
-    for (const folder in machine) {
-      if(folder === "label") continue;
-      const section = document.createElement("section");
-      section.innerHTML = `<h3>${folder.replaceAll("_"," ")}</h3>`;
-      const ul = document.createElement("ul");
-      machine[folder].forEach(item => {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${item.file}" target="_blank">${item.name}</a>`;
-        ul.appendChild(li);
-      });
-      section.appendChild(ul);
-      content.appendChild(section);
-    }
-  })
-  .catch(err => { content.innerHTML = "<p>❌ Erreur de chargement</p>"; console.error(err); });
 
-// ===== POPUP BOURDON + VOL FLUIDE =====
+    for(const folder in machine){
+
+        if(folder === "label") continue;
+
+        const section = document.createElement("section");
+
+        section.innerHTML = `
+            <h3>${folder.replaceAll("_"," ")}</h3>
+        `;
+
+        const ul = document.createElement("ul");
+
+        machine[folder].forEach(item => {
+
+            const li = document.createElement("li");
+
+            li.innerHTML = `
+                ${item.file}
+                    ${item.name}
+                </a>
+            `;
+
+            ul.appendChild(li);
+
+        });
+
+        section.appendChild(ul);
+        content.appendChild(section);
+    }
+
+})
+.catch(err=>{
+    console.error(err);
+    content.innerHTML = "<p>❌ Erreur de chargement</p>";
+});
+
+/* Bourdon */
+
 const bee = document.getElementById('bee');
 const main = document.querySelector('.main');
 
-let beeX = 10, beeY = 10; 
-let targetX = 0, targetY = 0;
+let beeX = 10;
+let beeY = 10;
+
+let targetX = 0;
+let targetY = 0;
+
 const beeSpeed = 0.10;
 
-function pickTarget() {
-  const rect = main.getBoundingClientRect();
-  targetX = Math.random() * (rect.width - 50);
-  targetY = Math.random() * (rect.height - 50);
+function pickTarget(){
+
+    const rect = main.getBoundingClientRect();
+
+    targetX = Math.random() * (rect.width - 60);
+    targetY = Math.random() * (rect.height - 60);
+
 }
 
-function animateBee() {
-  beeX += (targetX - beeX) * beeSpeed;
-  beeY += (targetY - beeY) * beeSpeed;
+function animateBee(){
 
-  const oscillation = Math.sin(Date.now() / 200) * 5;
+    beeX += (targetX-beeX)*beeSpeed;
+    beeY += (targetY-beeY)*beeSpeed;
 
-  bee.style.transform = `translate(${beeX}px, ${beeY + oscillation}px) rotate(${(targetX - beeX) * 0.5}deg)`;
+    const oscillation = Math.sin(Date.now()/200)*5;
 
-  if (Math.abs(targetX - beeX) < 1 && Math.abs(targetY - beeY) < 1) {
-    pickTarget();
-  }
+    bee.style.transform =
+        `translate(${beeX}px,${beeY+oscillation}px)`;
 
-  requestAnimationFrame(animateBee);
+    if(
+        Math.abs(targetX-beeX)<1 &&
+        Math.abs(targetY-beeY)<1
+    ){
+        pickTarget();
+    }
+
+    requestAnimationFrame(animateBee);
 }
 
 pickTarget();
 animateBee();
 
+/* Easter Egg */
+
 const egg = document.getElementById('easterEgg');
 const closeEgg = document.getElementById('closeEgg');
-bee.addEventListener('click', () => egg.style.display = 'block');
-closeEgg.addEventListener('click', () => egg.style.display = 'none');
+
+bee.addEventListener('click',()=>{
+    egg.style.display='block';
+});
+
+closeEgg.addEventListener('click',()=>{
+    egg.style.display='none';
+});
+
 </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
