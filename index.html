@@ -382,8 +382,8 @@ function animateBee(){
         `translate(${beeX}px,${beeY+oscillation}px)`;
 
     if(
-        Math.abs(targetX-beeX)<1 &&
-        Math.abs(targetY-beeY)<1
+        Math.abs(targetX-beeX) < 1 &&
+        Math.abs(targetY-beeY) < 1
     ){
         pickTarget();
     }
