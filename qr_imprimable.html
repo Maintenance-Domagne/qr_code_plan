@@ -222,14 +222,25 @@
     border-top: 1px solid var(--border);
   }
 
-  /* Print */
+  /* Print CSS - Optimisé pour PDF */
   @media print {
-    body { background: white; }
-    header, .actions, footer { display:none; }
-    .page { width:100%; margin:0; padding:0; }
-    .grid{ grid-template-columns:repeat(2,1fr); gap:6px; }
-    .machine{ box-shadow:none; border:1px solid #e8ddd2; }
-    .left{ width:110px; }
+    * { margin: 0; padding: 0; }
+    html, body { width: 100%; height: auto; }
+    .page { max-width: 100%; margin: 0; padding: 10mm; }
+    header, .actions, footer { display: none; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 8mm; page-break-inside: avoid; }
+    .machine { 
+      page-break-inside: avoid;
+      box-shadow: none; 
+      border: 0.5mm solid #e8ddd2;
+      padding: 5mm;
+      margin: 0;
+      height: auto;
+      break-inside: avoid;
+    }
+    .left { width: 35mm; }
+    .qr-wrap { padding: 3mm; }
+    .qr-wrap canvas { width: 30mm !important; height: 30mm !important; }
   }
 
   /* small util */
@@ -476,11 +487,23 @@
   async function exportToPDF() {
     const element = document.querySelector('.page');
     const opt = {
-      margin: 5,
+      margin: [10, 10, 10, 10],
       filename: 'QR_Codes_Machines_Ligne_A.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, logging: false, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      html2canvas: { 
+        scale: 2, 
+        logging: false, 
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait',
+        compress: true
+      },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
     
     // Masquer header et footer temporairement
