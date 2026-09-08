@@ -5,8 +5,7 @@
     "Schéma_électrique": [
       {
         "name": "Schéma électrique",
-        "file": "https://github.com/Maintenance-Domagne/qr_code_plan/raw/main/Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"
-       // "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"
+        "file": "Embouteillage_ligne_A/1- Dépalettiseur/Schéma_électrique/B_C22077ABE_15-03-2024_SB - SCHÉMAS ÉLECTRIQUE.pdf"
       }
     ],
     "Schéma_pneumatique": [
