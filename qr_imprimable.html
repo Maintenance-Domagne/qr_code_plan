@@ -96,9 +96,9 @@
   }
   
   .grid {
-    display:grid;
-    grid-template-columns:repeat(2, 1fr);
-    gap:24px;
+      display:flex;
+      flex-direction:column;
+      gap:24px;
   }
   @media (max-width:900px){ .grid{ grid-template-columns:repeat(1,1fr); } }
 
