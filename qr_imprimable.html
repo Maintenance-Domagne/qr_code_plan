@@ -220,6 +220,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
   // === Données complètes (inchangées) ===
@@ -438,7 +439,7 @@
     });
   }
 
-  // Export PDF
+  // Export PDF - Version corrigée
   async function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "p" });
@@ -452,15 +453,17 @@
     const qrSize = 38;
 
     const ids = Object.keys(machinesData);
-    let idx = 0;
+    let cardIndex = 0;
 
     for (let i = 0; i < ids.length; i++) {
-      if (idx > 0 && idx % 4 === 0) {
+      // Créer une nouvelle page si nécessaire (4 cartes par page: 2 colonnes x 2 lignes)
+      if (cardIndex > 0 && cardIndex % 4 === 0) {
         pdf.addPage();
-        idx = 0;
+        cardIndex = 0;
       }
-      const col = idx % 2;
-      const row = Math.floor(idx / 2);
+
+      const col = cardIndex % 2;
+      const row = Math.floor(cardIndex / 2);
 
       const x = margin + col * (cardW + margin);
       const y = margin + row * (cardH + margin);
@@ -469,53 +472,69 @@
       const machine = machinesData[id];
       const machineURL = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
 
-      // card background
-      pdf.setDrawColor(220);
-      pdf.setFillColor(255,255,255);
-      pdf.roundedRect(x, y, cardW, cardH, 6, 6, "F");
+      // Card background with border
+      pdf.setDrawColor(200);
+      pdf.setLineWidth(0.5);
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(x, y, cardW, cardH, "FD");
 
-      // title band
-      pdf.setFillColor(244,246,255);
-      pdf.roundedRect(x, y, cardW, titleH, 6, 6, "F");
+      // Title band background
+      pdf.setFillColor(244, 247, 255);
+      pdf.rect(x, y, cardW, titleH, "F");
+
+      // Title text
       pdf.setFontSize(11);
       pdf.setFont("helvetica", "bold");
-      pdf.setTextColor(14,20,32);
+      pdf.setTextColor(14, 20, 32);
       pdf.text(machine.label, x + 6, y + 7);
 
-      // QR generation in DOM to capture canvas
+      // QR code generation and rendering
       const temp = document.createElement("div");
       temp.style.position = "absolute";
       temp.style.left = "-9999px";
+      temp.style.width = "256px";
+      temp.style.height = "256px";
       document.body.appendChild(temp);
-      await generateQRCode(temp, machineURL, 256);
-      const canvas = temp.querySelector("canvas");
-      if (canvas) {
-        const img = canvas.toDataURL("image/png");
-        pdf.addImage(img, "PNG", x + 6, y + titleH + 6, qrSize, qrSize);
+      
+      try {
+        await generateQRCode(temp, machineURL, 256);
+        const canvas = temp.querySelector("canvas");
+        if (canvas) {
+          const img = canvas.toDataURL("image/png");
+          pdf.addImage(img, "PNG", x + 6, y + titleH + 6, qrSize, qrSize);
+        }
+      } catch (err) {
+        console.error("Erreur génération QR:", err);
       }
+      
       document.body.removeChild(temp);
 
-      // URL printed small
+      // URL printed under QR
       pdf.setFontSize(8);
       pdf.setTextColor(100);
-      pdf.text(machineURL, x + 6 + qrSize + 4, y + titleH + 10, { maxWidth: cardW - qrSize - 20 });
+      const displayURL = machineURL.replace("https://maintenance-domagne.github.io/", "");
+      pdf.text(displayURL, x + 6 + qrSize + 4, y + titleH + 12, { maxWidth: cardW - qrSize - 20 });
 
-      // file list
+      // File list
       pdf.setFontSize(9);
-      pdf.setTextColor(35);
-      let tY = y + titleH + qrSize + 10;
+      pdf.setTextColor(35, 35, 35);
+      let tY = y + titleH + qrSize + 18;
       const maxWidth = cardW - 12;
+      const maxTY = y + cardH - 4;
+      
       Object.keys(machine).forEach(key => {
-        if (key !== "label") {
+        if (key !== "label" && tY < maxTY) {
           machine[key].forEach(item => {
-            const lines = pdf.splitTextToSize("• " + item.name, maxWidth);
-            pdf.text(lines, x + 6, tY);
-            tY += lines.length * 5;
+            if (tY < maxTY) {
+              const lines = pdf.splitTextToSize("• " + item.name, maxWidth);
+              pdf.text(lines, x + 6, tY);
+              tY += Math.min(lines.length * 3.5, 7);
+            }
           });
         }
       });
 
-      idx++;
+      cardIndex++;
     }
 
     pdf.save("QR_Codes_Machines_Ligne_A.pdf");
@@ -532,11 +551,11 @@
         btn.disabled = true;
         await exportToPDF();
         btn.textContent = "✅ PDF prêt";
-        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1800);
+        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
       } catch (err) {
-        console.error(err);
-        btn.textContent = "❌ Erreur";
-        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1800);
+        console.error("Erreur export PDF:", err);
+        btn.textContent = "❌ Erreur - Vérifier console";
+        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2500);
       }
     });
 
