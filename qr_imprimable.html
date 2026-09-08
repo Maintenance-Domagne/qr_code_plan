@@ -257,7 +257,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
   // === Données complètes ===
@@ -472,100 +472,29 @@
     });
   }
 
-  // Export PDF
+  // Export PDF avec html2pdf
   async function exportToPDF() {
+    const element = document.querySelector('.page');
+    const opt = {
+      margin: 5,
+      filename: 'QR_Codes_Machines_Ligne_A.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, logging: false, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    // Masquer header et footer temporairement
+    const header = document.querySelector('header');
+    const footer = document.querySelector('footer');
+    header.style.display = 'none';
+    footer.style.display = 'none';
+    
     try {
-      const { jsPDF } = window.jspdf;
-      if (!jsPDF) throw new Error("jsPDF non disponible");
-
-      const pdf = new jsPDF({ unit: "mm", format: "a4" });
-      
-      const pageW = 210;
-      const pageH = 297;
-      const margin = 10;
-      const colW = (pageW - margin * 3) / 2;
-      const rowH = 85;
-      
-      const ids = Object.keys(machinesData);
-      let pageNum = 1;
-      let posX = margin;
-      let posY = margin;
-      
-      for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        const machine = machinesData[id];
-        const url = `https://maintenance-domagne.github.io/qr_code_plan/index.html?machine=${id}`;
-        
-        // Ajout page si nécessaire
-        if (posY + rowH > pageH - margin) {
-          pdf.addPage();
-          posX = margin;
-          posY = margin;
-        }
-        
-        // Fond avec gradient chaleureux
-        pdf.setFillColor(255, 251, 247);
-        pdf.setDrawColor(232, 221, 210);
-        pdf.setLineWidth(0.5);
-        pdf.rect(posX, posY, colW, rowH, "FD");
-        
-        // Titre avec fond chaud
-        pdf.setFillColor(244, 230, 215);
-        pdf.rect(posX, posY, colW, 10, "F");
-        pdf.setFontSize(10);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(139, 90, 60);
-        pdf.text(machine.label, posX + 3, posY + 7);
-        
-        // QR code
-        const tempDiv = document.createElement("div");
-        tempDiv.style.position = "absolute";
-        tempDiv.style.left = "-9999px";
-        document.body.appendChild(tempDiv);
-        
-        await generateQRCode(tempDiv, url, 200);
-        const canvas = tempDiv.querySelector("canvas");
-        if (canvas) {
-          const imgData = canvas.toDataURL("image/png");
-          pdf.addImage(imgData, "PNG", posX + 3, posY + 12, 30, 30);
-        }
-        document.body.removeChild(tempDiv);
-        
-        // URL
-        pdf.setFontSize(7);
-        pdf.setTextColor(125, 109, 98);
-        const shortUrl = url.replace("https://maintenance-domagne.github.io/", "");
-        pdf.text(shortUrl, posX + 35, posY + 18, { maxWidth: colW - 38 });
-        
-        // Documents
-        pdf.setFontSize(8);
-        pdf.setTextColor(61, 53, 48);
-        let docY = posY + 45;
-        Object.keys(machine).forEach(key => {
-          if (key !== "label") {
-            machine[key].forEach(item => {
-              if (docY < posY + rowH - 2) {
-                const txt = "• " + item.name;
-                const lines = pdf.splitTextToSize(txt, colW - 6);
-                pdf.text(lines, posX + 3, docY);
-                docY += lines.length * 3.5;
-              }
-            });
-          }
-        });
-        
-        // Passage colonne suivante
-        posX += colW + margin;
-        if (posX + colW > pageW) {
-          posX = margin;
-          posY += rowH + margin;
-        }
-      }
-      
-      pdf.save("QR_Codes_Machines_Ligne_A.pdf");
-    } catch (error) {
-      console.error("Erreur PDF:", error);
-      alert("Erreur lors de l'export PDF. Vérifiez la console.");
+      await html2pdf().set(opt).from(element).save();
+    } finally {
+      // Restaurer l'affichage
+      header.style.display = 'flex';
+      footer.style.display = 'block';
     }
   }
 
@@ -583,7 +512,7 @@
         btn.textContent = "✅ PDF prêt";
         setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
       } catch (err) {
-        console.error(err);
+        console.error("Erreur PDF:", err);
         btn.textContent = "❌ Erreur";
         setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
       }
