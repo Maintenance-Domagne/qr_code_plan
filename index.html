@@ -6,7 +6,7 @@
 
 <title>Documentation Technique - Ligne A</title>
 
-<link href="httpsr:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 
@@ -330,7 +330,7 @@ fetch("./data.json")
             const li = document.createElement("li");
 
             li.innerHTML = `
-                ${item.file}
+                <a href="${item.file}">
                     ${item.name}
                 </a>
             `;
